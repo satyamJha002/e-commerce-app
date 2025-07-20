@@ -1,4 +1,5 @@
 import React from "react";
+import {Link} from "react-router-dom";
 
 const Cart = () => {
   return (
@@ -75,6 +76,7 @@ const Cart = () => {
                         <div className="flex gap-6 sm:gap-4 max-sm:flex-col">
                             <div className="w-24 h-24 max-sm:w-24 max-sm:h-24 shrink-0">
                                 <img src='https://readymadeui.com/images/watch5.webp'
+                                     alt={``}
                                      className="w-full h-full object-contain"/>
                             </div>
                             <div className="flex flex-col gap-4">
@@ -139,6 +141,7 @@ const Cart = () => {
                         <div className="flex gap-6 sm:gap-4 max-sm:flex-col">
                             <div className="w-24 h-24 max-sm:w-24 max-sm:h-24 shrink-0">
                                 <img src='https://readymadeui.com/images/sunglass6.webp'
+                                     alt={``}
                                      className="w-full h-full object-contain"/>
                             </div>
                             <div className="flex flex-col gap-4">
@@ -212,10 +215,13 @@ const Cart = () => {
                             className="ml-auto">$206.00</span></li>
                     </ul>
                     <div className="mt-8 space-y-4">
+                        <Link
+                             to={'/checkout'} >
                         <button type="button"
                                 className="text-sm px-4 py-2.5 w-full font-medium tracking-wide bg-slate-800 hover:bg-slate-900 text-white rounded-md cursor-pointer">Buy
                             Now
                         </button>
+                        </Link>
                         <button type="button"
                                 className="text-sm px-4 py-2.5 w-full font-medium tracking-wide bg-slate-50 hover:bg-slate-100 text-slate-900 border border-gray-300 rounded-md cursor-pointer">Continue
                             Shopping

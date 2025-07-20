@@ -17,6 +17,7 @@ import HeadPhones from "./Pages/Products/HeadPhones/HeadPhones.jsx";
 import SmartWatches from "./Pages/Products/SmartWatches/SmartWatches.jsx";
 import ProductView from "./Pages/Products/ProductView.jsx";
 import Orders from "./Pages/Orders.jsx";
+import CheckOut from "./Pages/CheckOut.jsx";
 
 const App = () => {
   return (
@@ -28,6 +29,7 @@ const App = () => {
         <Route path="/profile" element={<Profile />} />
         <Route path="/register" element={<Register />} />
         <Route path="/cart" element={<Cart />} />
+        <Route path="/checkout" element={<CheckOut />} />
         <Route path='/orders-summary' element={<Orders/>}/>
           <Route path="/all-products" element={<Products />} />
         <Route path='/product/view' element={<ProductView />} />

@@ -246,7 +246,7 @@ const Products = () => {
                                 <h2 className='card-title'>{shoe.name}</h2>
                                 <p>Rs {shoe.price}</p>
                             </div>
-                            <button className={`bg-blue-700 text-white px-3 py-2 rounded-md hover:bg-blue-200 hover:text-black cursor-pointer `}>
+                            <button className={`bg-blue-700 text-white px-3 py-2 m-6 rounded-md hover:bg-blue-200 hover:text-black cursor-pointer `}>
                                 Add to cart
                             </button>
                         </div>
@@ -273,7 +273,7 @@ const Products = () => {
                                 <h2 className='card-title'>{watch.name}</h2>
                                 <p>Rs {watch.price}</p>
                             </div>
-                            <button className={`bg-blue-700 text-white px-3 py-2 rounded-md hover:bg-blue-200 hover:text-black cursor-pointer `}>
+                            <button className={`bg-blue-700 text-white px-3 py-2 m-6 rounded-md hover:bg-blue-200 hover:text-black cursor-pointer `}>
                                 Add to cart
                             </button>
                         </div>
@@ -298,7 +298,7 @@ const Products = () => {
                                 <h2 className='card-title'>{backpack.name}</h2>
                                 <p>Rs {backpack.price}</p>
                             </div>
-                            <button className={`bg-blue-700 text-white px-3 py-2 rounded-md hover:bg-blue-200 hover:text-black cursor-pointer `}>
+                            <button className={`bg-blue-700 text-white px-3 py-2 m-6 rounded-md hover:bg-blue-200 hover:text-black cursor-pointer `}>
                                 Add to cart
                             </button>
                         </div>
@@ -324,7 +324,7 @@ const Products = () => {
                                 <h2 className='card-title'>{headphone.name}</h2>
                                 <p>Rs {headphone.price}</p>
                             </div>
-                            <button className={`bg-blue-700 text-white px-3 py-2 rounded-md hover:bg-blue-200 hover:text-black cursor-pointer `}>
+                            <button className={`bg-blue-700 text-white px-3 py-2 m-6 rounded-md hover:bg-blue-200 hover:text-black cursor-pointer `}>
                                 Add to cart
                             </button>
                         </div>
