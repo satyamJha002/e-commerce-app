@@ -1,7 +1,13 @@
 import { FaShoppingCart, FaUser } from "react-icons/fa";
-import React from "react";
+import React, {useState} from "react";
+import {BiSearch} from "react-icons/bi";
 
 const Header = () => {
+  const [showSearch, setShowSearch] = useState(false);
+
+  const handleShowSearch = () => {
+    setShowSearch(!showSearch);
+  }
   return (
       <nav className="fixed top-0 left-0 right-0 z-50 bg-base-100 shadow-sm flex justify-between items-center px-8 py-4">
         <a className="btn btn-ghost text-xl flex items-center gap-2" href="/">
@@ -19,11 +25,23 @@ const Header = () => {
           EliteMart
         </a>
         <div className="flex items-center gap-4">
+          <div className={`relative transition-all duration-300 ease-in-out`}>
+            <input
+                type='text'
+                className={`border-2 border-gray-600 px-3 py-1 rounded-md focus:outline-none transition-all duration-300 ease-in-out ${showSearch ? 'opacity-100' : 'opacity-0'}`}
+                placeholder="Search..."
+            />
+          </div>
+
+          <button className="flex items-center gap-2 focus:outline-none" type="button" onClick={handleShowSearch}>
+            <BiSearch className="mr-2 cursor-pointer" size={20} />
+          </button>
+
           <a href="/cart" className="btn btn-ghost flex items-center gap-2">
             <FaShoppingCart />
             Cart
           </a>
-          <a href="/orders" className="btn btn-ghost flex items-center gap-2">
+          <a href="/orders-summary" className="btn btn-ghost flex items-center gap-2">
             Orders
           </a>
           <details className="dropdown dropdown-hover">

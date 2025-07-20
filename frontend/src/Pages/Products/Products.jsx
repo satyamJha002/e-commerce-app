@@ -34,7 +34,7 @@ const Products = () => {
             name: 'Chuck Taylor All Star',
             brand: 'Converse',
             price: 4599,
-            imageUrl: 'https://www.converse.in/media/catalog/product/1/6/162050c_a_107x1.jpg',
+            imageUrl: 'https://imgs.search.brave.com/HhzN96BHXwRpmB9Aol_lsklj4DOBHsgL-fvrXHoC6Ks/rs:fit:500:0:1:0/g:ce/aHR0cHM6Ly9zdGF0/aWMubmV0c2hvZXMu/Y29tLmJyL3Byb2R1/dG9zL3RlbmlzLWlu/ZmFudGlsLWNvbnZl/cnNlLWFsbC1zdGFy/LWNodWNrLXRheWxv/ci0vODAvRDI2LTAx/MzUtMDgwL0QyNi0w/MTM1LTA4MF96b29t/MS5qcGc_dHM9MTY5/NTExMTcxMCZpbXM9/MzI2eA',
             description: [
                 'Iconic canvas upper',
                 'OrthoLite insole for cushioning',
@@ -96,6 +96,19 @@ const Products = () => {
                 'Fast charging support',
                 'Stylish stainless steel body'
             ]
+        },
+        {
+            id: 4,
+            name: 'CMF Watch Pro 2',
+            brand: 'Nothing',
+            price: 3920,
+            imageUrl: 'https://cdn.shopify.com/s/files/1/0579/8091/1768/files/CMF-Watch-Pro-2_Orange_1.png?v=1720092965',
+            description: [
+                'Wear OS by Google',
+                'SpO2, heart rate, and GPS tracking',
+                'Fast charging support',
+                'Stylish stainless steel body'
+            ]
         }
     ];
 
@@ -137,6 +150,19 @@ const Products = () => {
                 'Dual side slip-in pockets',
                 'Front zip pocket for easy access',
                 'Stylish, minimal design'
+            ]
+        },
+        {
+            id: 4,
+            name: 'Kaslo Camera Bag Tech - 30L',
+            brand: 'Herschel',
+            price: 18000,
+            imageUrl: 'https://herschel.com/content/dam/herschel/products/11590/11590-00001-OS_01.jpg.sthumbnails.2000.2500.webp',
+            description: [
+                '100% recycled 600D polyester, excluding trims',
+                'Tonal stripe liner made from 100% recycled polyester',
+                'Padded and fleece lined 15"/16" laptop sleeve with buckle',
+                'Zippered closures'
             ]
         }
     ];
@@ -200,13 +226,13 @@ const Products = () => {
 
     return (
         <div className="container-fluid py-20 px-20">
-            <h1 className={`text-3xl font-bold mb-8`}>All Products</h1>
+            <h1 className={`text-3xl font-bold mb-8 text-center`}>All Products</h1>
 
             <div>
-                <div className={`flex justify-between items-center`}>
-                    <h2 className={`text-lg font-semibold`}>Shoes</h2>
-                    <Link to={`/shoes`}>
-                        <button className={`text-blue-500`}>View More Shoes</button>
+                <div className={`flex gap-6 items-center`}>
+                    <h2 className={`text-2xl font-semibold font-serif`}>Shoes</h2>
+                    <Link to={`/products/shoes`}>
+                        <button className={`text-white rounded-full px-4 py-2 shadow-2xl cursor-pointer hover:bg-blue-200 hover:text-black bg-blue-800`}>View More</button>
                     </Link>
                 </div>
 
@@ -220,15 +246,20 @@ const Products = () => {
                                 <h2 className='card-title'>{shoe.name}</h2>
                                 <p>Rs {shoe.price}</p>
                             </div>
+                            <button className={`bg-blue-700 text-white px-3 py-2 rounded-md hover:bg-blue-200 hover:text-black cursor-pointer `}>
+                                Add to cart
+                            </button>
                         </div>
                     ))}
+
                 </div>
+
             </div>
-            <div>
-                <div className={`flex justify-between items-center`}>
-                    <h2 className={`text-lg font-semibold`}>SmartWatches</h2>
-                    <Link to={`/watches`}>
-                        <button className={`text-blue-500`}>View More Watches</button>
+            <div className={`my-6`}>
+                <div className={`flex gap-6 items-center`}>
+                    <h2 className={`text-2xl font-semibold font-serif`}>SmartWatches</h2>
+                    <Link to={`/products/smartwatches`}>
+                        <button className={`text-white rounded-full px-4 py-2 shadow-2xl cursor-pointer hover:bg-blue-200 hover:text-black bg-blue-800`}>View More</button>
                     </Link>
                 </div>
 
@@ -242,15 +273,18 @@ const Products = () => {
                                 <h2 className='card-title'>{watch.name}</h2>
                                 <p>Rs {watch.price}</p>
                             </div>
+                            <button className={`bg-blue-700 text-white px-3 py-2 rounded-md hover:bg-blue-200 hover:text-black cursor-pointer `}>
+                                Add to cart
+                            </button>
                         </div>
                     ))}
                 </div>
             </div>
-            <div>
-                <div className={`flex justify-between items-center`}>
-                    <h2 className={`text-lg font-semibold`}>Backpacks</h2>
-                    <Link to={`/backpacks`}>
-                        <button className={`text-blue-500`}>View More Backpacks</button>
+            <div className={`my-6`}>
+                <div className={`flex gap-6 items-center`}>
+                    <h2 className={`text-2xl font-semibold font-serif`}>Backpacks</h2>
+                    <Link to={`/products/backpacks`}>
+                        <button className={`text-white rounded-full px-4 py-2 shadow-2xl cursor-pointer hover:bg-blue-200 hover:text-black bg-blue-800`}>View More</button>
                     </Link>
                 </div>
 
@@ -264,16 +298,19 @@ const Products = () => {
                                 <h2 className='card-title'>{backpack.name}</h2>
                                 <p>Rs {backpack.price}</p>
                             </div>
+                            <button className={`bg-blue-700 text-white px-3 py-2 rounded-md hover:bg-blue-200 hover:text-black cursor-pointer `}>
+                                Add to cart
+                            </button>
                         </div>
                     ))}
                 </div>
             </div>
 
-            <div>
-                <div className={`flex justify-between items-center`}>
-                    <h2 className={`text-lg font-semibold`}>HeadPhones</h2>
-                    <Link to={`/headphones`}>
-                        <button className={`text-blue-500`}>View More Headphones</button>
+            <div className={`my-6`}>
+                <div className={`flex gap-5 items-center`}>
+                    <h1 className={`text-2xl font-semibold font-serif`}>HeadPhones</h1>
+                    <Link to={`/products/headphones`}>
+                        <button className={`text-white rounded-full px-4 py-2 shadow-2xl cursor-pointer hover:bg-blue-200 hover:text-black bg-blue-800`}>View More</button>
                     </Link>
                 </div>
 
@@ -287,6 +324,9 @@ const Products = () => {
                                 <h2 className='card-title'>{headphone.name}</h2>
                                 <p>Rs {headphone.price}</p>
                             </div>
+                            <button className={`bg-blue-700 text-white px-3 py-2 rounded-md hover:bg-blue-200 hover:text-black cursor-pointer `}>
+                                Add to cart
+                            </button>
                         </div>
                     ))}
                 </div>

@@ -7,6 +7,16 @@ import Login from "./Pages/Login";
 import Register from "./Pages/Register";
 import Cart from "./Pages/Cart";
 import Products from "./Pages/Products/Products.jsx";
+import Electronics from "./Pages/Categories/Electronic.jsx";
+import Fashions from "./Pages/Categories/Fashion.jsx";
+import HomeAndGarden from "./Pages/Categories/HomeAndGarden.jsx";
+import Sports from "./Pages/Categories/Sports.jsx";
+import Shoes from "./Pages/Products/Shoes/Shoes.jsx";
+import BackPacks from "./Pages/Products/BackPacks/BackPacks.jsx";
+import HeadPhones from "./Pages/Products/HeadPhones/HeadPhones.jsx";
+import SmartWatches from "./Pages/Products/SmartWatches/SmartWatches.jsx";
+import ProductView from "./Pages/Products/ProductView.jsx";
+import Orders from "./Pages/Orders.jsx";
 
 const App = () => {
   return (
@@ -18,7 +28,21 @@ const App = () => {
         <Route path="/profile" element={<Profile />} />
         <Route path="/register" element={<Register />} />
         <Route path="/cart" element={<Cart />} />
+        <Route path='/orders-summary' element={<Orders/>}/>
           <Route path="/all-products" element={<Products />} />
+        <Route path='/product/view' element={<ProductView />} />
+
+          {/* Categories Routes*/}
+          <Route path="/categories/electronics" element={<Electronics/>}/>
+          <Route path="/categories/fashions" element={<Fashions/>}/>
+          <Route path="/categories/home-and-appliances" element={<HomeAndGarden/>}/>
+          <Route path="/categories/sports" element={<Sports/>}/>
+
+          {/* Products */}
+          <Route path="/products/shoes" element={<Shoes/>}/>
+          <Route path="/products/backpacks" element={<BackPacks/>}/>
+          <Route path="/products/headphones" element={<HeadPhones/>}/>
+          <Route path="/products/smartwatches" element={<SmartWatches/>}/>
       </Routes>
       <Footer />
     </>

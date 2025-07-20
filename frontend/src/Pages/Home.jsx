@@ -1,12 +1,13 @@
 import React from "react";
 import {Link} from "react-router-dom";
+import AboutUs from "./AboutUs.jsx";
 
 const Home = () => {
     const categories = [
-        { id: 1, src: 'https://images.pexels.com/photos/51383/photo-camera-subject-photographer-51383.jpeg', title: 'Electronics' },
-        { id: 2, src: 'https://images.pexels.com/photos/32955012/pexels-photo-32955012.jpeg', title: 'Fashion' },
-        { id: 3, src: 'https://images.pexels.com/photos/4050387/pexels-photo-4050387.jpeg', title: 'Home & Garden' },
-        { id: 4, src: 'https://images.pexels.com/photos/269948/pexels-photo-269948.jpeg', title: 'Sports' },
+        { id: 1, src: 'https://images.pexels.com/photos/51383/photo-camera-subject-photographer-51383.jpeg', title: 'Electronics', path: '/categories/electronics' },
+        { id: 2, src: 'https://images.pexels.com/photos/32955012/pexels-photo-32955012.jpeg', title: 'Fashion', path: '/categories/fashions' },
+        { id: 3, src: 'https://images.pexels.com/photos/4050387/pexels-photo-4050387.jpeg', title: 'Home & Garden', path: '/categories/home-and-appliances' },
+        { id: 4, src: 'https://images.pexels.com/photos/269948/pexels-photo-269948.jpeg', title: 'Sports', path: '/categories/sports' },
     ];
 
     const products = [
@@ -15,31 +16,35 @@ const Home = () => {
             cardTitle: 'Shoes',
             cardImage: 'https://img.daisyui.com/images/stock/photo-1606107557195-0e29a4b5b4aa.webp',
             cardDescription: 'A stylish pair of sneakers perfect for daily wear.',
+            path: "/products/shoes"
         },
         {
             id: 2,
             cardTitle: 'Smartwatch',
             cardImage: 'https://images.pexels.com/photos/110471/pexels-photo-110471.jpeg',
             cardDescription: 'Track your fitness and stay connected with this elegant smartwatch.',
+            path: "/products/smartwatches"
         },
         {
             id: 3,
             cardTitle: 'Backpack',
             cardImage: 'https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp',
             cardDescription: 'Spacious and durable backpack for school or travel.',
+            path: "/products/backpacks"
         },
         {
             id: 4,
             cardTitle: 'Headphones',
             cardImage: 'https://img.daisyui.com/images/stock/photo-1572635148818-ef6fd45eb394.webp',
             cardDescription: 'Enjoy immersive sound quality with noise-cancelling headphones.',
+            path: "/products/headphones"
         },
     ];
 
 
     return (
             <div className="pt-20 px-20 container-fluid py-20">
-            <div className="container mx-auto flex flex-wrap items-center justify-around p-8 bg-black text-white">
+            <div className="container mx-auto flex flex-wrap items-center justify-around p-8 w-full bg-black text-white">
                 <div className="m-6 max-w-xl">
                     <div className="flex flex-col justify-center gap-5">
                         <h1 className="text-5xl font-bold">Summer Sale Upto 70% Off</h1>
@@ -68,7 +73,9 @@ const Home = () => {
                 <h1 className="text-3xl font-bold text-center mb-8">Shop Category</h1>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
                     {categories.map(category => (
-                        <div key={category.id} className="flex flex-col items-center justify-center text-center space-y-3">
+                        <Link key={category.id} to={`${category.path}`}>
+
+                        <div className="flex flex-col items-center justify-center text-center space-y-3">
                             <img
                                 src={category.src}
                                 alt={category.title}
@@ -76,9 +83,14 @@ const Home = () => {
                             />
                             <h3 className="text-lg font-medium">{category.title}</h3>
                         </div>
+                        </Link>
                     ))}
                 </div>
             </div>
+
+                <div className={`mt-12 px-4`}>
+                   <AboutUs/>
+                </div>
 
             <div className="mt-12 px-4">
                 <div className={`flex justify-between`}>
@@ -93,6 +105,7 @@ const Home = () => {
 
                 <div className="flex flex-wrap gap-6 justify-around p-8">
                     {products.map((product) => (
+                        <Link to={`${product.path}`}>
                         <div key={product.id} className="card w-72 bg-base-100 shadow-xl">
                             <figure>
                                 <img src={product.cardImage} alt={product.cardTitle} className="h-48 w-full object-cover" />
@@ -100,11 +113,9 @@ const Home = () => {
                             <div className="card-body">
                                 <h2 className="card-title">{product.cardTitle}</h2>
                                 <p>{product.cardDescription}</p>
-                                <div className="card-actions justify-end">
-                                    <button className="btn btn-primary">Buy Now</button>
-                                </div>
                             </div>
                         </div>
+                        </Link>
                     ))}
                 </div>
             </div>
