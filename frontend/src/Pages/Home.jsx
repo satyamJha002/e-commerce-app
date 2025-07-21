@@ -90,17 +90,23 @@ const Home = () => {
 
                 {/* Categories Section */}
                 <div className="my-16 px-4">
-                    <h1 className="text-3xl md:text-4xl font-bold text-center mb-10 ">Shop by Category</h1>
+                    <h1 className="text-3xl md:text-4xl font-bold text-center mb-10">Shop by Category</h1>
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
                         {categories.map(category => (
                             <Link key={category.id} to={category.path}>
                                 <div className="group flex flex-col items-center text-center space-y-3 bg-white p-4 rounded-lg shadow-md hover:shadow-xl transition-shadow duration-300">
-                                    <img
-                                        src={category.src}
-                                        alt={category.title}
-                                        className="w-full h-40 object-cover rounded-md group-hover:scale-105 transition-transform duration-300"
-                                        loading="lazy"
-                                    />
+                                    <picture>
+                                        <source srcSet={`${category.src}?format=webp`} type="image/webp" />
+                                        <img
+                                            src={category.src}
+                                            alt={category.title}
+                                            className="w-full h-40 object-cover rounded-md group-hover:scale-102 transition-transform duration-200"
+                                            loading="lazy"
+                                            width="300"
+                                            height="160"
+                                            style={{ willChange: 'transform' }}
+                                        />
+                                    </picture>
                                     <h3 className="text-lg font-semibold text-gray-700 group-hover:text-indigo-600">{category.title}</h3>
                                 </div>
                             </Link>

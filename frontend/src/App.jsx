@@ -1,4 +1,4 @@
-import { Route, Routes } from "react-router-dom";
+import {Route, Routes, useLocation} from "react-router-dom";
 import Home from "./Pages/Home";
 import Header from "./component/Header";
 import Footer from "./component/Footer";
@@ -20,9 +20,12 @@ import Orders from "./Pages/Orders.jsx";
 import CheckOut from "./Pages/CheckOut.jsx";
 
 const App = () => {
+  const location = useLocation();
+
+  const hideHeaderAndFooter = location.pathname === '/login' || location.pathname === '/register'
   return (
     <>
-      <Header />
+      {!hideHeaderAndFooter && <Header/>}
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
@@ -46,7 +49,7 @@ const App = () => {
           <Route path="/products/headphones" element={<HeadPhones/>}/>
           <Route path="/products/smartwatches" element={<SmartWatches/>}/>
       </Routes>
-      <Footer />
+      {!hideHeaderAndFooter && <Footer/>}
     </>
   );
 };

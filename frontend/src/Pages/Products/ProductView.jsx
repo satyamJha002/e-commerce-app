@@ -32,27 +32,27 @@ const ProductView = () => {
 
                     <div className="py-6 px-8 max-lg:max-w-2xl">
                         <div>
-                            <h2 className="text-xl font-semibold text-slate-900">Adjective Attire | T-shirt</h2>
+                            <h2 className="text-xl font-semibold ">Adjective Attire | T-shirt</h2>
                             <p className="text-sm text-slate-500 mt-2">Well-Versed Commerce</p>
                         </div>
 
                         <div className="flex items-center space-x-1 mt-6">
-                            <svg className="w-4 h-4 fill-slate-800" viewBox="0 0 14 13" fill="none"
+                            <svg className="w-4 h-4 fill-yellow-400" viewBox="0 0 14 13" fill="none"
                                  xmlns="http://www.w3.org/2000/svg">
                                 <path
                                     d="M7 0L9.4687 3.60213L13.6574 4.83688L10.9944 8.29787L11.1145 12.6631L7 11.2L2.8855 12.6631L3.00556 8.29787L0.342604 4.83688L4.5313 3.60213L7 0Z"/>
                             </svg>
-                            <svg className="w-4 h-4 fill-slate-800" viewBox="0 0 14 13" fill="none"
+                            <svg className="w-4 h-4 fill-yellow-400" viewBox="0 0 14 13" fill="none"
                                  xmlns="http://www.w3.org/2000/svg">
                                 <path
                                     d="M7 0L9.4687 3.60213L13.6574 4.83688L10.9944 8.29787L11.1145 12.6631L7 11.2L2.8855 12.6631L3.00556 8.29787L0.342604 4.83688L4.5313 3.60213L7 0Z"/>
                             </svg>
-                            <svg className="w-4 h-4 fill-slate-800" viewBox="0 0 14 13" fill="none"
+                            <svg className="w-4 h-4 fill-yellow-400" viewBox="0 0 14 13" fill="none"
                                  xmlns="http://www.w3.org/2000/svg">
                                 <path
                                     d="M7 0L9.4687 3.60213L13.6574 4.83688L10.9944 8.29787L11.1145 12.6631L7 11.2L2.8855 12.6631L3.00556 8.29787L0.342604 4.83688L4.5313 3.60213L7 0Z"/>
                             </svg>
-                            <svg className="w-4 h-4 fill-slate-800" viewBox="0 0 14 13" fill="none"
+                            <svg className="w-4 h-4 fill-yellow-400" viewBox="0 0 14 13" fill="none"
                                  xmlns="http://www.w3.org/2000/svg">
                                 <path
                                     d="M7 0L9.4687 3.60213L13.6574 4.83688L10.9944 8.29787L11.1145 12.6631L7 11.2L2.8855 12.6631L3.00556 8.29787L0.342604 4.83688L4.5313 3.60213L7 0Z"/>
@@ -83,52 +83,52 @@ const ProductView = () => {
 
                         <div className="mt-8">
                             <div className="flex items-center flex-wrap gap-4">
-                                <p className="text-slate-900 text-4xl font-semibold">$30</p>
+                                <p className=" text-4xl font-semibold">$30</p>
                                 <p className="text-slate-400 text-sm mt-2"><strike>$42</strike> <span className="ml-1">Tax included</span>
                                 </p>
                             </div>
                         </div>
 
                         <div className="mt-8">
-                            <h3 className="text-xl font-semibold text-slate-900">Choose a Size</h3>
+                            <h3 className="text-xl font-semibold ">Choose a Size</h3>
                             <div className="flex flex-wrap gap-4 mt-4">
                                 <button type="button"
-                                        className="w-10 h-10 cursor-pointer border hover:border-slate-800 border-gray-300 font-semibold text-slate-900 text-sm rounded-full flex items-center justify-center shrink-0">SM
+                                        className="w-10 h-10 cursor-pointer border hover:border-slate-800 border-gray-300 font-semibold  text-sm rounded-full flex items-center justify-center shrink-0">SM
                                 </button>
                                 <button type="button"
-                                        className="w-10 h-10 cursor-pointer border hover:border-slate-800 border-slate-800 font-semibold text-slate-900 text-sm rounded-full flex items-center justify-center shrink-0">MD
+                                        className="w-10 h-10 cursor-pointer border hover:border-slate-800 border-gray-300 font-semibold  text-sm rounded-full flex items-center justify-center shrink-0">MD
                                 </button>
                                 <button type="button"
-                                        className="w-10 h-10 cursor-pointer border hover:border-slate-800 border-gray-300 font-semibold text-slate-900 text-sm rounded-full flex items-center justify-center shrink-0">LG
+                                        className="w-10 h-10 cursor-pointer border hover:border-slate-800 border-gray-300 font-semibold  text-sm rounded-full flex items-center justify-center shrink-0">LG
                                 </button>
                                 <button type="button"
-                                        className="w-10 h-10 cursor-pointer border hover:border-slate-800 border-gray-300 font-semibold text-slate-900 text-sm rounded-full flex items-center justify-center shrink-0">XL
+                                        className="w-10 h-10 cursor-pointer border hover:border-slate-800 border-gray-300 font-semibold  text-sm rounded-full flex items-center justify-center shrink-0">XL
                                 </button>
                             </div>
                         </div>
 
                         <div className="mt-8 space-y-4">
                             <button type="button"
-                                    className="w-full px-4 py-2.5 cursor-pointer border border-slate-800 bg-transparent hover:bg-slate-50 text-slate-900 text-sm font-medium rounded-md">Add
+                                    className="w-full px-4 py-2.5 cursor-pointer border  bg-transparent hover:bg-slate-50 hover:text-black text-sm font-medium rounded-md">Add
                                 to cart
                             </button>
                             <button type="button"
-                                    className="w-full px-4 py-2.5 cursor-pointer border border-slate-800 bg-slate-800 hover:bg-slate-900 text-white text-sm font-medium rounded-md">Buy
+                                    className="w-full px-4 py-2.5 cursor-pointer border  bg-slate-800 hover:bg-slate-900 text-white text-sm font-medium rounded-md">Buy
                                 now
                             </button>
                         </div>
 
                         <div className="mt-8">
                             <div>
-                                <h3 className="text-xl font-semibold text-slate-900">Product Description</h3>
-                                <p className="text-sm text-slate-500 mt-4">Elevate your casual style with our premium
+                                <h3 className="text-xl font-semibold ">Product Description</h3>
+                                <p className="text-sm  mt-4">Elevate your casual style with our premium
                                     men's t-shirt. Crafted for comfort and designed with a modern fit, this versatile
                                     shirt is an essential addition to your wardrobe. The soft and breathable fabric
                                     ensures all-day comfort, making it perfect for everyday wear. Its classic crew neck
                                     and short sleeves offer a timeless look.</p>
                             </div>
 
-                            <ul className="space-y-3 list-disc mt-4 pl-4 text-sm text-slate-500">
+                            <ul className="space-y-3 list-disc mt-4 pl-4 text-sm ">
                                 <li>A t-shirt is a wardrobe essential because it is so versatile.</li>
                                 <li>Available in a wide range of sizes, from extra small to extra large, and even in
                                     tall and petite sizes.
