@@ -1,18 +1,29 @@
 {
   "name": "e-commerce-app",
-  "version": "1.0.0",
-  "description": "",
+  "version": "2.0.0",
+  "description": "ecommerce application built with mern stack",
+  "homepage": "https://github.com/satyamJha002/e-commerce-app#readme",
+  "bugs": {
+    "url": "https://github.com/satyamJha002/e-commerce-app/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/satyamJha002/e-commerce-app.git"
+  },
+  "license": "MIT ",
+  "author": "Satyam Jha",
+  "type": "module",
   "main": "index.js",
   "scripts": {
-    "server": "nodemon index.js"
+    "start": "node backend/index.js",
+    "server": "nodemon backend/index.js",
+    "client": "npm run dev --prefix frontend",
+    "dev": "concurrently \"npm run server\" \"npm run client\""
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
   "dependencies": {
-    "cors": "^2.8.5",
+    "concurrently": "^9.2.0",
+    "dotenv": "^17.2.1",
     "express": "^5.1.0",
-    "mongoose": "^8.16.1",
     "nodemon": "^3.1.10"
   }
 }
