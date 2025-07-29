@@ -5,6 +5,7 @@ import {notFound, errorHandler} from "./middleware/errorHandler.js";
 import productRoute from './routes/product.route.js';
 import authRoute from './routes/auth.route.js';
 import cookieParser from 'cookie-parser'
+import cors from 'cors';
 
 
 dotenv.config();
@@ -12,6 +13,14 @@ connectDb();
 
 const port = process.env.PORT || 5000
 const app = express();
+
+const corsOptions = {
+    origin: ['http://localhost:5173', 'http://localhost:3000'],
+    credentials: true,
+    optionsSuccessStatus: 200
+};
+
+app.use(cors(corsOptions));
 
 app.use(express.json());
 app.use(express.urlencoded({extended: true}));
