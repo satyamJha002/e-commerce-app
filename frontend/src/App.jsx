@@ -18,40 +18,45 @@ import SmartWatches from "./Pages/Products/SmartWatches/SmartWatches.jsx";
 import ProductView from "./Pages/Products/ProductView.jsx";
 import Orders from "./Pages/Orders.jsx";
 import CheckOut from "./Pages/CheckOut.jsx";
+import ProtectedRoute from "./component/ProtectedRoute.jsx";
 
 const App = () => {
-  const location = useLocation();
+    const location = useLocation();
 
-  const hideHeaderAndFooter = location.pathname === '/login' || location.pathname === '/register'
-  return (
-    <>
-      {!hideHeaderAndFooter && <Header/>}
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/profile" element={<Profile />} />
-        <Route path="/register" element={<Register />} />
-        <Route path="/cart" element={<Cart />} />
-        <Route path="/checkout" element={<CheckOut />} />
-        <Route path='/orders-summary' element={<Orders/>}/>
-          <Route path="/all-products" element={<Products />} />
-        <Route path='/product/view' element={<ProductView />} />
+    const hideHeaderAndFooter = location.pathname === '/login' || location.pathname === '/register'
+    return (
+        <>
+            {!hideHeaderAndFooter && <Header/>}
+            <Routes>
+                <Route path="/" element={<Home/>}/>
+                <Route path="/login" element={<Login/>}/>
+                <Route path="/register" element={<Register/>}/>
 
-          {/* Categories Routes*/}
-          <Route path="/categories/electronics" element={<Electronics/>}/>
-          <Route path="/categories/fashions" element={<Fashions/>}/>
-          <Route path="/categories/home-and-appliances" element={<HomeAndGarden/>}/>
-          <Route path="/categories/sports" element={<Sports/>}/>
+                <Route element={<ProtectedRoute/>}>
+                    <Route path="/profile" element={<Profile/>}/>
+                    <Route path="/cart" element={<Cart/>}/>
+                    <Route path="/checkout" element={<CheckOut/>}/>
+                    <Route path='/orders-summary' element={<Orders/>}/>
+                    <Route path="/all-products" element={<Products/>}/>
+                    <Route path='/product/view' element={<ProductView/>}/>
+                </Route>
 
-          {/* Products */}
-          <Route path="/products/shoes" element={<Shoes/>}/>
-          <Route path="/products/backpacks" element={<BackPacks/>}/>
-          <Route path="/products/headphones" element={<HeadPhones/>}/>
-          <Route path="/products/smartwatches" element={<SmartWatches/>}/>
-      </Routes>
-      {!hideHeaderAndFooter && <Footer/>}
-    </>
-  );
+                {/* Categories Routes*/}
+                <Route path="/categories/electronics" element={<Electronics/>}/>
+                <Route path="/categories/fashions" element={<Fashions/>}/>
+                <Route path="/categories/home-and-appliances" element={<HomeAndGarden/>}/>
+                <Route path="/categories/sports" element={<Sports/>}/>
+
+                {/* Products */}
+                <Route path="/products/shoes" element={<Shoes/>}/>
+                <Route path="/products/backpacks" element={<BackPacks/>}/>
+                <Route path="/products/headphones" element={<HeadPhones/>}/>
+                <Route path="/products/smartwatches" element={<SmartWatches/>}/>
+
+            </Routes>
+            {!hideHeaderAndFooter && <Footer/>}
+        </>
+    );
 };
 
 export default App;

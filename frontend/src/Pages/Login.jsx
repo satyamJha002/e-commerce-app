@@ -1,14 +1,40 @@
-import React from "react";
+import React, {useState} from "react";
+import {useDispatch} from "react-redux";
+import {useNavigate} from "react-router-dom";
+import {useLoginMutation} from "../slices/authApiSlice.js";
+import {setCredentials} from "../slices/authSlice.js";
+import toast from "daisyui/components/toast/index.js";
 
 const Login = () => {
+    const [email, setEmail] = useState("")
+    const [password, setPassword] = useState("")
+
+    const dispatch = useDispatch()
+    const navigate = useNavigate()
+
+    const [login, {isLoading}] = useLoginMutation()
+
+    const submitHandler = async (e) => {
+        e.preventDefault();
+        try {
+            const response = await login({email, password}).unwrap();
+            dispatch(setCredentials(response));
+            navigate('/');
+        } catch (err) {
+            console.error('Login failed:', err);
+            toast.error(err?.data?.message || err.error || 'Login failed');
+        }
+    };
     return (
-        <div className="flex flex-col lg:flex-row min-h-screen bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 dark:from-gray-800 dark:via-gray-900 dark:to-gray-900 animate-gradient">
+        <div
+            className="flex flex-col lg:flex-row min-h-screen bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 dark:from-gray-800 dark:via-gray-900 dark:to-gray-900 animate-gradient">
             <section className="flex flex-1 justify-center items-center p-4 lg:p-8">
-                <div className="w-full max-w-md bg-white rounded-xl shadow-2xl dark:bg-gray-800 dark:border-gray-700 p-6 sm:p-8 transform transition-all duration-500 hover:scale-105">
+                <div
+                    className="w-full max-w-md bg-white rounded-xl shadow-2xl dark:bg-gray-800 dark:border-gray-700 p-6 sm:p-8 transform transition-all duration-500 hover:scale-105">
                     <h1 className="text-3xl font-extrabold text-gray-900 dark:text-white mb-6 text-center">
                         Welcome Back
                     </h1>
-                    <form className="space-y-6" action="#">
+                    <form className="space-y-6" onSubmit={submitHandler}>
                         <div>
                             <label
                                 htmlFor="email"
@@ -20,6 +46,8 @@ const Login = () => {
                                 type="email"
                                 name="email"
                                 id="email"
+                                value={email}
+                                onChange={(e) => setEmail(e.target.value)}
                                 className="w-full px-4 py-3 bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-900 dark:text-white placeholder-gray-400 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-200"
                                 placeholder="name@company.com"
                                 required
@@ -36,6 +64,8 @@ const Login = () => {
                                 type="password"
                                 name="password"
                                 id="password"
+                                value={password}
+                                onChange={(e) => setPassword(e.target.value)}
                                 className="w-full px-4 py-3 bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-900 dark:text-white placeholder-gray-400 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-200"
                                 placeholder="••••••••"
                                 required
@@ -64,9 +94,10 @@ const Login = () => {
                         </div>
                         <button
                             type="submit"
+                            disabled={isLoading}
                             className="w-full bg-indigo-600 text-white rounded-lg py-3 px-4 hover:bg-indigo-700 focus:ring-2 focus:ring-indigo-300 focus:outline-none transition-all duration-200 dark:bg-indigo-600 dark:hover:bg-indigo-700 dark:focus:ring-indigo-800 transform hover:scale-105"
                         >
-                            Sign In
+                            {isLoading ? 'Sign In...' : 'Login'}
                         </button>
                         <p className="text-sm text-gray-600 dark:text-gray-300 text-center">
                             Don’t have an account?{" "}
@@ -98,7 +129,7 @@ const Login = () => {
                         loading="lazy"
                         width="1200"
                         height="800"
-                        style={{ willChange: 'transform' }}
+                        style={{willChange: 'transform'}}
                     />
                 </picture>
                 <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent"></div>
