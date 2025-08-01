@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link } from "react-router-dom";
+import {Link} from "react-router-dom";
 
 const Products = () => {
     const shoes = [
@@ -223,22 +223,24 @@ const Products = () => {
     ];
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 dark:from-gray-800 dark:via-gray-900 dark:to-gray-900 animate-gradient py-12 px-4 sm:px-6 lg:px-8">
-            <h1 className="text-4xl font-extrabold text-gray-900 dark:text-white mb-12 text-center">All Products</h1>
+        <div
+            className="min-h-screen mt-12 dark:from-gray-800 dark:via-gray-900 dark:to-gray-900 animate-gradient py-12 px-4 sm:px-6 lg:px-8">
 
             {/* Shoes Section */}
             <div className="mb-12">
                 <div className="flex justify-between items-center mb-6">
                     <h2 className="text-2xl font-semibold font-serif text-gray-800 dark:text-gray-200">Shoes</h2>
                     <Link to="/products/shoes">
-                        <button className="bg-indigo-600 text-white rounded-full px-4 py-2 shadow-lg hover:bg-indigo-700 transition-all duration-200">
+                        <button
+                            className="bg-indigo-600 text-white rounded-full px-4 py-2 shadow-lg hover:bg-indigo-700 transition-all duration-200">
                             View More
                         </button>
                     </Link>
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
                     {shoes.map((shoe) => (
-                        <div key={shoe.id} className="card bg-white dark:bg-gray-800 shadow-xl rounded-lg overflow-hidden transform transition-all duration-300 hover:scale-105 hover:shadow-2xl">
+                        <div key={shoe.id}
+                             className="card bg-white dark:bg-gray-800 shadow-xl rounded-lg overflow-hidden transform transition-all duration-300 hover:scale-105 hover:shadow-2xl">
                             <figure className="relative">
                                 <img
                                     src={shoe.imageUrl}
@@ -247,18 +249,21 @@ const Products = () => {
                                     loading="lazy"
                                     width="288"
                                     height="192"
-                                    style={{ willChange: 'transform' }}
+                                    style={{willChange: 'transform'}}
                                 />
-                                <div className="absolute inset-0 bg-black/10 hover:bg-black/5 transition-all duration-300"></div>
+                                <div
+                                    className="absolute inset-0 bg-black/10 hover:bg-black/5 transition-all duration-300"></div>
                             </figure>
                             <div className="card-body p-4">
                                 <h2 className="card-title text-lg font-semibold text-gray-800 dark:text-gray-200">
-                                    {shoe.name} <span className="text-sm text-gray-500 dark:text-gray-400">by {shoe.brand}</span>
+                                    {shoe.name} <span
+                                    className="text-sm text-gray-500 dark:text-gray-400">by {shoe.brand}</span>
                                 </h2>
                                 <p className="text-gray-600 dark:text-gray-300">Rs {shoe.price.toLocaleString()}</p>
                             </div>
                             <div className="p-4">
-                                <button className="w-full bg-indigo-600 text-white rounded-lg py-2 px-4 hover:bg-indigo-700 focus:ring-2 focus:ring-indigo-300 focus:outline-none transition-all duration-200 transform hover:scale-105">
+                                <button
+                                    className="w-full bg-indigo-600 text-white rounded-lg py-2 px-4 hover:bg-indigo-700 focus:ring-2 focus:ring-indigo-300 focus:outline-none transition-all duration-200 transform hover:scale-105">
                                     Add to Cart
                                 </button>
                             </div>
@@ -272,14 +277,16 @@ const Products = () => {
                 <div className="flex justify-between items-center mb-6">
                     <h2 className="text-2xl font-semibold font-serif text-gray-800 dark:text-gray-200">SmartWatches</h2>
                     <Link to="/products/smartwatches">
-                        <button className="bg-indigo-600 text-white rounded-full px-4 py-2 shadow-lg hover:bg-indigo-700 transition-all duration-200">
+                        <button
+                            className="bg-indigo-600 text-white rounded-full px-4 py-2 shadow-lg hover:bg-indigo-700 transition-all duration-200">
                             View More
                         </button>
                     </Link>
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
                     {watches.map((watch) => (
-                        <div key={watch.id} className="card bg-white dark:bg-gray-800 shadow-xl rounded-lg overflow-hidden transform transition-all duration-300 hover:scale-105 hover:shadow-2xl">
+                        <div key={watch.id}
+                             className="card bg-white dark:bg-gray-800 shadow-xl rounded-lg overflow-hidden transform transition-all duration-300 hover:scale-105 hover:shadow-2xl">
                             <figure className="relative">
                                 <img
                                     src={watch.imageUrl}
@@ -288,18 +295,21 @@ const Products = () => {
                                     loading="lazy"
                                     width="288"
                                     height="192"
-                                    style={{ willChange: 'transform' }}
+                                    style={{willChange: 'transform'}}
                                 />
-                                <div className="absolute inset-0 bg-black/10 hover:bg-black/5 transition-all duration-300"></div>
+                                <div
+                                    className="absolute inset-0 bg-black/10 hover:bg-black/5 transition-all duration-300"></div>
                             </figure>
                             <div className="card-body p-4">
                                 <h2 className="card-title text-lg font-semibold text-gray-800 dark:text-gray-200">
-                                    {watch.name} <span className="text-sm text-gray-500 dark:text-gray-400">by {watch.brand}</span>
+                                    {watch.name} <span
+                                    className="text-sm text-gray-500 dark:text-gray-400">by {watch.brand}</span>
                                 </h2>
                                 <p className="text-gray-600 dark:text-gray-300">Rs {watch.price.toLocaleString()}</p>
                             </div>
                             <div className="p-4">
-                                <button className="w-full bg-indigo-600 text-white rounded-lg py-2 px-4 hover:bg-indigo-700 focus:ring-2 focus:ring-indigo-300 focus:outline-none transition-all duration-200 transform hover:scale-105">
+                                <button
+                                    className="w-full bg-indigo-600 text-white rounded-lg py-2 px-4 hover:bg-indigo-700 focus:ring-2 focus:ring-indigo-300 focus:outline-none transition-all duration-200 transform hover:scale-105">
                                     Add to Cart
                                 </button>
                             </div>
@@ -313,14 +323,16 @@ const Products = () => {
                 <div className="flex justify-between items-center mb-6">
                     <h2 className="text-2xl font-semibold font-serif text-gray-800 dark:text-gray-200">Backpacks</h2>
                     <Link to="/products/backpacks">
-                        <button className="bg-indigo-600 text-white rounded-full px-4 py-2 shadow-lg hover:bg-indigo-700 transition-all duration-200">
+                        <button
+                            className="bg-indigo-600 text-white rounded-full px-4 py-2 shadow-lg hover:bg-indigo-700 transition-all duration-200">
                             View More
                         </button>
                     </Link>
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
                     {backpacks.map((backpack) => (
-                        <div key={backpack.id} className="card bg-white dark:bg-gray-800 shadow-xl rounded-lg overflow-hidden transform transition-all duration-300 hover:scale-105 hover:shadow-2xl">
+                        <div key={backpack.id}
+                             className="card bg-white dark:bg-gray-800 shadow-xl rounded-lg overflow-hidden transform transition-all duration-300 hover:scale-105 hover:shadow-2xl">
                             <figure className="relative">
                                 <img
                                     src={backpack.imageUrl}
@@ -329,18 +341,21 @@ const Products = () => {
                                     loading="lazy"
                                     width="288"
                                     height="192"
-                                    style={{ willChange: 'transform' }}
+                                    style={{willChange: 'transform'}}
                                 />
-                                <div className="absolute inset-0 bg-black/10 hover:bg-black/5 transition-all duration-300"></div>
+                                <div
+                                    className="absolute inset-0 bg-black/10 hover:bg-black/5 transition-all duration-300"></div>
                             </figure>
                             <div className="card-body p-4">
                                 <h2 className="card-title text-lg font-semibold text-gray-800 dark:text-gray-200">
-                                    {backpack.name} <span className="text-sm text-gray-500 dark:text-gray-400">by {backpack.brand}</span>
+                                    {backpack.name} <span
+                                    className="text-sm text-gray-500 dark:text-gray-400">by {backpack.brand}</span>
                                 </h2>
                                 <p className="text-gray-600 dark:text-gray-300">Rs {backpack.price.toLocaleString()}</p>
                             </div>
                             <div className="p-4">
-                                <button className="w-full bg-indigo-600 text-white rounded-lg py-2 px-4 hover:bg-indigo-700 focus:ring-2 focus:ring-indigo-300 focus:outline-none transition-all duration-200 transform hover:scale-105">
+                                <button
+                                    className="w-full bg-indigo-600 text-white rounded-lg py-2 px-4 hover:bg-indigo-700 focus:ring-2 focus:ring-indigo-300 focus:outline-none transition-all duration-200 transform hover:scale-105">
                                     Add to Cart
                                 </button>
                             </div>
@@ -354,14 +369,16 @@ const Products = () => {
                 <div className="flex justify-between items-center mb-6">
                     <h2 className="text-2xl font-semibold font-serif text-gray-800 dark:text-gray-200">Headphones</h2>
                     <Link to="/products/headphones">
-                        <button className="bg-indigo-600 text-white rounded-full px-4 py-2 shadow-lg hover:bg-indigo-700 transition-all duration-200">
+                        <button
+                            className="bg-indigo-600 text-white rounded-full px-4 py-2 shadow-lg hover:bg-indigo-700 transition-all duration-200">
                             View More
                         </button>
                     </Link>
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
                     {headphones.map((headphone) => (
-                        <div key={headphone.id} className="card bg-white dark:bg-gray-800 shadow-xl rounded-lg overflow-hidden transform transition-all duration-300 hover:scale-105 hover:shadow-2xl">
+                        <div key={headphone.id}
+                             className="card bg-white dark:bg-gray-800 shadow-xl rounded-lg overflow-hidden transform transition-all duration-300 hover:scale-105 hover:shadow-2xl">
                             <figure className="relative">
                                 <img
                                     src={headphone.imageUrl}
@@ -370,18 +387,21 @@ const Products = () => {
                                     loading="lazy"
                                     width="288"
                                     height="192"
-                                    style={{ willChange: 'transform' }}
+                                    style={{willChange: 'transform'}}
                                 />
-                                <div className="absolute inset-0 bg-black/10 hover:bg-black/5 transition-all duration-300"></div>
+                                <div
+                                    className="absolute inset-0 bg-black/10 hover:bg-black/5 transition-all duration-300"></div>
                             </figure>
                             <div className="card-body p-4">
                                 <h2 className="card-title text-lg font-semibold text-gray-800 dark:text-gray-200">
-                                    {headphone.name} <span className="text-sm text-gray-500 dark:text-gray-400">by {headphone.brand}</span>
+                                    {headphone.name} <span
+                                    className="text-sm text-gray-500 dark:text-gray-400">by {headphone.brand}</span>
                                 </h2>
                                 <p className="text-gray-600 dark:text-gray-300">Rs {headphone.price.toLocaleString()}</p>
                             </div>
                             <div className="p-4">
-                                <button className="w-full bg-indigo-600 text-white rounded-lg py-2 px-4 hover:bg-indigo-700 focus:ring-2 focus:ring-indigo-300 focus:outline-none transition-all duration-200 transform hover:scale-105">
+                                <button
+                                    className="w-full bg-indigo-600 text-white rounded-lg py-2 px-4 hover:bg-indigo-700 focus:ring-2 focus:ring-indigo-300 focus:outline-none transition-all duration-200 transform hover:scale-105">
                                     Add to Cart
                                 </button>
                             </div>

@@ -3,7 +3,7 @@ import React from 'react'
 const Orders = () => {
     return (
         <div className={`mt-18`}>
-            <div className="bg-gray-100 min-h-screen flex items-center justify-center p-4">
+            <div className=" min-h-screen flex items-center justify-center p-4">
                 <div className="bg-white rounded-2xl shadow-xl overflow-hidden w-full max-w-xl">
                     <div className="bg-indigo-600 px-6 py-4">
                         <div className="flex items-center justify-between gap-2">

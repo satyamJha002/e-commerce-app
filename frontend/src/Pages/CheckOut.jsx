@@ -4,15 +4,15 @@ import {Link} from "react-router-dom";
 const CheckOut = () => {
     return (
         <div className="mt-20">
-            <div className="bg-white p-4">
+            <div className="p-4">
                 <div className="md:max-w-5xl max-w-xl mx-auto">
                     <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
                         <div className="lg:col-span-2 max-md:order-1">
-                            <h2 className="text-3xl font-semibold text-slate-900">Make a payment</h2>
-                            <p className="text-slate-500 text-sm mt-4">Complete your transaction swiftly and securely
+                            <h2 className="text-3xl font-semibold ">Make a payment</h2>
+                            <p className=" text-sm mt-4">Complete your transaction swiftly and securely
                                 with our easy-to-use payment process.</p>
                             <div className="mt-8 max-w-lg">
-                                <h3 className="text-lg font-semibold text-slate-900">Choose your payment method</h3>
+                                <h3 className="text-lg font-semibold ">Choose your payment method</h3>
                                 <div className="flex flex-wrap gap-4 justify-between mt-6">
                                     <div className="flex items-center">
                                         <input type="radio" className="w-5 h-5 cursor-pointer" id="card" checked/>
@@ -64,9 +64,9 @@ const CheckOut = () => {
                                         </div>
                                     </div>
                                     <Link to={'/orders-summary'}>
-                                    <button type="button"
-                                            className="mt-8 w-40 py-3 text-[15px] font-medium bg-purple-500 text-white rounded-md hover:bg-purple-600 tracking-wide cursor-pointer">Pay
-                                    </button>
+                                        <button type="button"
+                                                className="mt-8 w-40 py-3 text-[15px] font-medium bg-purple-500 text-white rounded-md hover:bg-purple-600 tracking-wide cursor-pointer">Pay
+                                        </button>
                                     </Link>
                                 </form>
                             </div>
