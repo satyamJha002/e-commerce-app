@@ -27,8 +27,26 @@ export const authApiSlice = apiSlice.injectEndpoints({
                 credentials: 'include',
             }),
             keepUnusedDataFor: 5
-        })
+        }),
+        logout: builder.mutation(
+            {
+                query: () => ({
+                    url: `${BASE_URL}/api/auth/logout`,
+                    method: 'POST',
+                    credentials: 'include',
+                }),
+                async onQueryStarted(arg, {dispatch, queryFulfilled}) {
+                    try {
+                        await queryFulfilled;
+                        // Reset the entire API state
+                        dispatch(apiSlice.util.resetApiState());
+                    } catch (err) {
+                        console.log('Logout error:', err);
+                    }
+                }
+            }
+        )
     })
 })
 
-export const {useLoginMutation, useRegisterMutation, useGetMeQuery} = authApiSlice
+export const {useLoginMutation, useRegisterMutation, useLogoutMutation, useGetMeQuery} = authApiSlice

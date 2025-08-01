@@ -3,7 +3,7 @@ import {useDispatch} from "react-redux";
 import {useNavigate} from "react-router-dom";
 import {useLoginMutation} from "../slices/authApiSlice.js";
 import {setCredentials} from "../slices/authSlice.js";
-import toast from "daisyui/components/toast/index.js";
+import {toast} from "react-toastify";
 
 const Login = () => {
     const [email, setEmail] = useState("")
@@ -20,6 +20,7 @@ const Login = () => {
             const response = await login({email, password}).unwrap();
             dispatch(setCredentials(response));
             navigate('/');
+            toast.success('Logged in successfully');
         } catch (err) {
             console.error('Login failed:', err);
             toast.error(err?.data?.message || err.error || 'Login failed');

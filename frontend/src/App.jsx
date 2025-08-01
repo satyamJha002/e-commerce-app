@@ -19,6 +19,9 @@ import ProductView from "./Pages/Products/ProductView.jsx";
 import Orders from "./Pages/Orders.jsx";
 import CheckOut from "./Pages/CheckOut.jsx";
 import ProtectedRoute from "./component/ProtectedRoute.jsx";
+import {ToastContainer} from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
 
 const App = () => {
     const location = useLocation();
@@ -26,6 +29,18 @@ const App = () => {
     const hideHeaderAndFooter = location.pathname === '/login' || location.pathname === '/register'
     return (
         <>
+            <ToastContainer
+                position="top-right"
+                autoClose={1000}
+                hideProgressBar={false}
+                newestOnTop={false}
+                closeOnClick
+                rtl={false}
+                pauseOnFocusLoss
+                draggable
+                pauseOnHover
+                theme="light"
+            />
             {!hideHeaderAndFooter && <Header/>}
             <Routes>
                 <Route path="/" element={<Home/>}/>
