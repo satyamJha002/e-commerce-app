@@ -40,51 +40,12 @@ const Register = () => {
             className="flex flex-col lg:flex-row min-h-screen dark:from-gray-800 dark:via-gray-900 dark:to-gray-900 animate-gradient">
             <section className="flex flex-1 justify-center items-center p-4 lg:p-8">
                 <div
-                    className="w-full max-w-[630px] bg-white rounded-xl shadow-2xl dark:bg-gray-800 dark:border-gray-700 p-6 sm:p-8 transform transition-all duration-500 hover:scale-105">
+                    className="w-full max-w-[450px] bg-white rounded-xl shadow-2xl dark:bg-gray-800 dark:border-gray-700 p-6 sm:p-8 transform transition-all duration-500 hover:scale-105">
                     <h1 className="text-3xl font-extrabold text-gray-900 dark:text-white mb-6 text-center">
                         Create Your Account
                     </h1>
                     <form className="space-y-6" onSubmit={handleSubmit}>
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                            {/* First Name */}
-                            <div className="sm:col-span-1">
-                                <label
-                                    htmlFor="firstName"
-                                    className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2"
-                                >
-                                    First Name
-                                </label>
-                                <input
-                                    type="text"
-                                    name="firstName"
-                                    id="firstName"
-                                    value={formData.firstName}
-                                    onChange={handleChange}
-                                    className="w-full px-4 py-3 bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-900 dark:text-white placeholder-gray-400 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-200"
-                                    placeholder="John"
-                                    required
-                                />
-                            </div>
-
-                            {/* Last Name */}
-                            <div className="sm:col-span-1">
-                                <label
-                                    htmlFor="lastName"
-                                    className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2"
-                                >
-                                    Last Name
-                                </label>
-                                <input
-                                    type="text"
-                                    name="lastName"
-                                    id="lastName"
-                                    value={formData.lastName}
-                                    onChange={handleChange}
-                                    className="w-full px-4 py-3 bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-900 dark:text-white placeholder-gray-400 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-200"
-                                    placeholder="Doe"
-                                    required
-                                />
-                            </div>
+                        <div className={'space-y-6'}>
 
                             {/* Username */}
                             <div className="sm:col-span-1">
@@ -126,26 +87,6 @@ const Register = () => {
                                 />
                             </div>
 
-                            {/* Phone Number */}
-                            <div className="sm:col-span-1">
-                                <label
-                                    htmlFor="phoneNumber"
-                                    className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2"
-                                >
-                                    Phone Number
-                                </label>
-                                <input
-                                    type="tel"
-                                    name="phoneNumber"
-                                    id="phoneNumber"
-                                    value={formData.phoneNumber}
-                                    onChange={handleChange}
-                                    className="w-full px-4 py-3 bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-900 dark:text-white placeholder-gray-400 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-200"
-                                    placeholder="+1 (555) 123-4567"
-                                    required
-                                />
-                            </div>
-
                             {/* Password */}
                             <div className="sm:col-span-1">
                                 <label
@@ -165,21 +106,6 @@ const Register = () => {
                                     required
                                 />
                             </div>
-                        </div>
-
-                        {/* Remember me checkbox */}
-                        <div className="flex items-center">
-                            <input
-                                id="remember"
-                                type="checkbox"
-                                className="w-4 h-4 border border-gray-300 rounded bg-gray-50 focus:ring-2 focus:ring-indigo-300 dark:bg-gray-700 dark:border-gray-600 dark:focus:ring-indigo-500"
-                            />
-                            <label
-                                htmlFor="remember"
-                                className="ml-2 text-sm text-gray-600 dark:text-gray-300"
-                            >
-                                Remember me
-                            </label>
                         </div>
 
                         {/* Submit button */}

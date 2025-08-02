@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React, {useState, useEffect} from "react";
 import {useDispatch} from "react-redux";
 import {useNavigate} from "react-router-dom";
 import {useLoginMutation} from "../slices/authApiSlice.js";
@@ -8,17 +8,38 @@ import {toast} from "react-toastify";
 const Login = () => {
     const [email, setEmail] = useState("")
     const [password, setPassword] = useState("")
+    const [isRemember, setIsRemember] = useState(true);
 
     const dispatch = useDispatch()
     const navigate = useNavigate()
 
     const [login, {isLoading}] = useLoginMutation()
 
+    useEffect(() => {
+        const savedEmail = localStorage.getItem("rememberEmail");
+        const savedPassword = localStorage.getItem("rememberPassword");
+
+        if (savedEmail && savedPassword) {
+            setEmail(savedEmail)
+            setPassword(savedPassword)
+            setIsRemember(!isRemember)
+        }
+    }, [])
+
     const submitHandler = async (e) => {
         e.preventDefault();
         try {
             const response = await login({email, password}).unwrap();
             dispatch(setCredentials(response));
+
+            if (isRemember) {
+                localStorage.setItem('rememberEmail', email);
+                localStorage.setItem('rememberPassword', password);
+            } else {
+                localStorage.removeItem('rememberEmail');
+                localStorage.removeItem('rememberPassword');
+            }
+
             navigate('/');
             toast.success('Logged in successfully');
         } catch (err) {
@@ -77,6 +98,8 @@ const Login = () => {
                                 <input
                                     id="remember"
                                     type="checkbox"
+                                    checked={isRemember}
+                                    onChange={(e) => setIsRemember(e.target.checked)}
                                     className="w-4 h-4 border border-gray-300 rounded bg-gray-50 focus:ring-2 focus:ring-indigo-300 dark:bg-gray-700 dark:border-gray-600 dark:focus:ring-indigo-500"
                                 />
                                 <label

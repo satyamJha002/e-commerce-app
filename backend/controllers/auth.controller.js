@@ -1,37 +1,34 @@
 import asyncHandler from "../middleware/asyncHandler.js";
-import User from '../models/auth.model.js'
+import Auth from '../models/auth.model.js'
 import {generateToken} from "../utils/generateToken.js";
 
 const register = asyncHandler(async (req, res) => {
-    const {firstName, lastName, email, password, username, phoneNumber} = req.body;
+    const {email, password, username} = req.body;
 
-    const field = [firstName, lastName, email, password, username, phoneNumber];
+    const field = [email, password, username];
 
     if (field.some(f => !f)) {
         res.status(400);
         throw new Error('Please fill out the required field');
     }
 
-    const userExist = await User.findOne({$or: [{email}, {username}]})
+    const authExist = await Auth.findOne({$or: [{email}, {username}]})
 
-    if (userExist) {
+    if (authExist) {
         res.status(400);
         throw new Error('User is already registered with this email and username')
     }
 
-    const user = await User.create({
-        firstName,
-        lastName,
+    const auth = await Auth.create({
         email,
         password,
         username,
-        phoneNumber,
         role: 'user',
         isAdmin: false,
     })
 
-    if (user) {
-        const token = generateToken(user._id);
+    if (auth) {
+        const token = generateToken(auth._id);
 
         res.cookie('token', token, {
             httpOnly: true,
@@ -42,14 +39,12 @@ const register = asyncHandler(async (req, res) => {
         })
 
         res.status(201).json({
-            _id: user._id,
-            firstName: user.firstName,
-            lastName: user.lastName,
-            email: user.email,
-            password: user.password,
-            phoneNumber: user.phoneNumber,
-            role: user.role,
-            isAdmin: user.isAdmin,
+            _id: auth._id,
+            email: auth.email,
+            username: auth.username,
+            password: auth.password,
+            role: auth.role,
+            isAdmin: auth.isAdmin,
             token
         })
     } else {
@@ -69,12 +64,12 @@ const login = asyncHandler(async (req, res) => {
     console.log('Email', email)
     console.log('Password', password)
 
-    const user = await User.findOne({email})
+    const auth = await Auth.findOne({email})
 
-    console.log('user', user)
+    console.log('user', auth)
 
-    if (user && (await user.matchPassword(password))) {
-        const token = generateToken(user._id);
+    if (auth && (await auth.matchPassword(password))) {
+        const token = generateToken(auth._id);
 
         res.cookie('token', token, {
             httpOnly: true,
@@ -85,12 +80,10 @@ const login = asyncHandler(async (req, res) => {
         })
 
         res.status(200).json({
-            firstName: user.firstName,
-            lastName: user.lastName,
-            email: user.email,
-            phoneNumber: user.phoneNumber,
-            role: user.role,
-            isAdmin: user.isAdmin,
+            email: auth.email,
+            username: auth.username,
+            role: auth.role,
+            isAdmin: auth.isAdmin,
             token
         })
     } else {
@@ -100,21 +93,18 @@ const login = asyncHandler(async (req, res) => {
 })
 
 const getMe = asyncHandler(async (req, res) => {
-    const user = await User.findById(req.user._id).select('-password'); // Fixed typo
+    const auth = await Auth.findById(req.user._id).select('-password'); // Fixed typo
 
-    if (!user) {
-        return res.status(404).json({message: 'User not found'});
+    if (!auth) {
+        return res.status(404).json({message: 'Auth not found'});
     }
 
     res.status(200).json({
-        _id: user._id,
-        firstName: user.firstName,
-        lastName: user.lastName,
-        email: user.email,
-        username: user.username,
-        phoneNumber: user.phoneNumber,
-        role: user.role,
-        isAdmin: user.isAdmin
+        _id: auth._id,
+        email: auth.email,
+        username: auth.username,
+        role: auth.role,
+        isAdmin: auth.isAdmin
     });
 });
 
