@@ -1,6 +1,6 @@
 import jwt from 'jsonwebtoken'
 import asyncHandler from "./asyncHandler.js";
-import User from '../models/auth.model.js'
+import Auth from '../models/auth.model.js'
 
 const protectAuthMiddleware = asyncHandler(async (req, res, next) => {
     let token;
@@ -21,11 +21,11 @@ const protectAuthMiddleware = asyncHandler(async (req, res, next) => {
 
     try {
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
-        req.user = await User.findById(decoded.id).select("-password");
+        req.user = await Auth.findById(decoded.id).select("-password");
 
         if (!req.user) {
             res.status(401);
-            throw new Error('User not found');
+            throw new Error('Auth not found');
         }
 
         next();
