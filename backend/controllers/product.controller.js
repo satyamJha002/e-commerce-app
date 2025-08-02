@@ -9,4 +9,4 @@ const getProductById = asyncHandler(async (req, res) => {});
 
 const deleteProductById = asyncHandler(async (req, res) => {});
 
-export { getProducts, getProductById };
+export { creatProducts, getProducts, getProductById, deleteProductById };
