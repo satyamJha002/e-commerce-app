@@ -1,6 +1,10 @@
 import mongoose from 'mongoose'
 
 const userDetails = new mongoose.Schema({
+    auth: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Auth'
+    },
     firstName: {
         type: String,
         required: true
@@ -9,20 +13,16 @@ const userDetails = new mongoose.Schema({
         type: String,
         required: true
     },
-    email: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Auth'
-    },
     phoneNumber: {
         type: String,
         required: true
-    },
-    username: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Auth'
     },
     address: {
         type: String,
         required: true
     }
 })
+
+const UserDetails = mongoose.model('UserDetails', userDetails)
+
+export default UserDetails;
