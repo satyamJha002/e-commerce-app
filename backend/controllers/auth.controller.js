@@ -20,12 +20,21 @@ const register = asyncHandler(async (req, res) => {
     throw new Error("User is already registered with this email and username");
   }
 
+  // Coerce incoming admin indicators safely
+  const requestedRole = (req.body.role || "user").toLowerCase();
+  const requestedIsAdmin =
+    typeof req.body.isAdmin === "string"
+      ? req.body.isAdmin.toLowerCase() === "true"
+      : Boolean(req.body.isAdmin);
+
+  const makeAdmin = requestedRole === "admin" || requestedIsAdmin === true;
+
   const auth = await Auth.create({
     email,
     password,
     username,
-    role: "user",
-    isAdmin: false,
+    role: makeAdmin ? "admin" : "user",
+    isAdmin: makeAdmin,
   });
 
   if (auth) {
@@ -43,7 +52,6 @@ const register = asyncHandler(async (req, res) => {
       _id: auth._id,
       email: auth.email,
       username: auth.username,
-      password: auth.password,
       role: auth.role,
       isAdmin: auth.isAdmin,
       token,
@@ -62,12 +70,7 @@ const login = asyncHandler(async (req, res) => {
     throw new Error("Please fill out the required field");
   }
 
-  console.log("Email", email);
-  console.log("Password", password);
-
   const auth = await Auth.findOne({ email });
-
-  console.log("user", auth);
 
   if (auth && (await auth.matchPassword(password))) {
     const token = generateToken(auth._id);

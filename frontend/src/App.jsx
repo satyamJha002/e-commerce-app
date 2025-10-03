@@ -1,4 +1,4 @@
-import {Route, Routes, useLocation} from "react-router-dom";
+import { Route, Routes, useLocation } from "react-router-dom";
 import Home from "./Pages/Home";
 import Header from "./component/Header";
 import Footer from "./component/Footer";
@@ -19,59 +19,89 @@ import ProductView from "./Pages/Products/ProductView.jsx";
 import Orders from "./Pages/Orders.jsx";
 import CheckOut from "./Pages/CheckOut.jsx";
 import ProtectedRoute from "./component/ProtectedRoute.jsx";
-import {ToastContainer} from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
-
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import AdminDashboard from "./Pages/Admin/AdminDashboard.jsx";
+import NotFound from "./component/NotFound.jsx";
+import AdminLogin from "./Pages/Admin/AdminLogin.jsx";
+import AdminProtectedRoute from "./component/AdminProtectedRoute.jsx";
+import ProductManagement from "./Pages/Admin/ProductManagement.jsx";
+import OrderManagement from "./Pages/Admin/OrderManagement.jsx";
+import CustomerManagement from "./Pages/Admin/CustomerManagement.jsx";
+import Setting from "./Pages/Admin/Setting.jsx";
 
 const App = () => {
-    const location = useLocation();
+  const location = useLocation();
 
-    const hideHeaderAndFooter = location.pathname === '/login' || location.pathname === '/register'
-    return (
-        <>
-            <ToastContainer
-                position="top-right"
-                autoClose={1000}
-                hideProgressBar={false}
-                newestOnTop={false}
-                closeOnClick
-                rtl={false}
-                pauseOnFocusLoss
-                draggable
-                pauseOnHover
-                theme="light"
-            />
-            {!hideHeaderAndFooter && <Header/>}
-            <Routes>
-                <Route path="/" element={<Home/>}/>
-                <Route path="/login" element={<Login/>}/>
-                <Route path="/register" element={<Register/>}/>
+  const hideHeaderAndFooter =
+    location.pathname === "/login" || location.pathname === "/register";
 
-                <Route element={<ProtectedRoute/>}>
-                    <Route path="/profile" element={<Profile/>}/>
-                    <Route path="/cart" element={<Cart/>}/>
-                    <Route path="/checkout" element={<CheckOut/>}/>
-                    <Route path='/orders-summary' element={<Orders/>}/>
-                    <Route path="/all-products" element={<Products/>}/>
-                    <Route path='/product/view' element={<ProductView/>}/>
-                </Route>
+  const hideHeaderAndFooterAdmin = location.pathname.includes("/admin");
 
-                {/* Categories Routes*/}
-                <Route path="/categories/electronics" element={<Electronics/>}/>
-                <Route path="/categories/fashions" element={<Fashions/>}/>
-                <Route path="/categories/home-and-appliances" element={<HomeAndGarden/>}/>
-                <Route path="/categories/sports" element={<Sports/>}/>
+  return (
+    <>
+      <ToastContainer
+        position="top-right"
+        autoClose={1000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="light"
+      />
+      {!hideHeaderAndFooter && !hideHeaderAndFooterAdmin && <Header />}
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
 
-                {/* Products */}
-                <Route path="/products/shoes" element={<Shoes/>}/>
-                <Route path="/products/backpacks" element={<BackPacks/>}/>
-                <Route path="/products/headphones" element={<HeadPhones/>}/>
-                <Route path="/products/smartwatches" element={<SmartWatches/>}/>
+        <Route element={<ProtectedRoute />}>
+          <Route path="/profile" element={<Profile />} />
+          <Route path="/cart" element={<Cart />} />
+          <Route path="/checkout" element={<CheckOut />} />
+          <Route path="/orders-summary" element={<Orders />} />
+          <Route path="/all-products" element={<Products />} />
+          <Route path="/product/view" element={<ProductView />} />
+        </Route>
 
-            </Routes>
-            {!hideHeaderAndFooter && <Footer/>}
-        </>
-    );
+        {/* Categories Routes*/}
+        <Route path="/categories/electronics" element={<Electronics />} />
+        <Route path="/categories/fashions" element={<Fashions />} />
+        <Route
+          path="/categories/home-and-appliances"
+          element={<HomeAndGarden />}
+        />
+        <Route path="/categories/sports" element={<Sports />} />
+
+        {/* Products */}
+        <Route path="/products/shoes" element={<Shoes />} />
+        <Route path="/products/backpacks" element={<BackPacks />} />
+        <Route path="/products/headphones" element={<HeadPhones />} />
+        <Route path="/products/smartwatches" element={<SmartWatches />} />
+
+        {/* Admin Dashboard */}
+        <Route path="/admin-login" element={<AdminLogin />} />
+        <Route element={<AdminProtectedRoute />}>
+          <Route path="/admin-dashboard" element={<AdminDashboard />} />
+          <Route
+            path="/admin-product-management"
+            element={<ProductManagement />}
+          />
+          <Route path="/admin-order-management" element={<OrderManagement />} />
+          <Route
+            path="/admin-customer-management"
+            element={<CustomerManagement />}
+          />
+          <Route path="/admin-setting" element={<Setting />} />
+        </Route>
+        <Route path="*" element={<NotFound />} />
+      </Routes>
+      {!hideHeaderAndFooter && !hideHeaderAndFooterAdmin && <Footer />}
+    </>
+  );
 };
 
 export default App;
