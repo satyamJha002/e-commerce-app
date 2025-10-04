@@ -7,41 +7,82 @@ import {
   getFilteredRowModel,
   flexRender,
 } from "@tanstack/react-table";
+import AddProduct from "./ProductManagement/AddProduct";
 
-const productData = [
+const initialProductData = [
   {
-    name: "Eco-Friendly Water Bottle",
-    sku: "SKU12345",
-    price: "$15.99",
+    id: 1,
+    name: "Ultraboost 22",
+    brand: "Adidas",
+    price: 15999,
+    originalPrice: 18999,
+    discount: 16,
+    rating: 4.5,
+    reviewCount: 1247,
+    badge: "Best Seller",
+    imageUrl:
+      "https://assets.adidas.com/images/w_840,h_840,f_auto,q_auto:sensitive,fl_lossy/456b93731cdb44e68452ae92012fe986_9366/GX9158_09_standard.jpg",
+    keyFeatures: ["Boost Technology", "Primeknit Upper", "Continental Rubber"],
+    description: [
+      "Boost midsole for high energy return",
+      "Primeknit+ upper for adaptive support",
+      "Continental™ Rubber outsole for grip",
+      "Made with recycled materials",
+    ],
     stock: 150,
+    sku: "SKU12345",
   },
   {
+    id: 2,
     name: "Organic Cotton T-Shirt",
-    sku: "SKU67890",
-    price: "$25.50",
+    brand: "Nike",
+    price: 2550,
+    originalPrice: 3000,
+    discount: 15,
+    rating: 4.2,
+    reviewCount: 89,
+    badge: "New Arrival",
+    imageUrl: "https://example.com/tshirt.jpg",
+    keyFeatures: ["Organic Cotton", "Breathable Fabric"],
+    description: [
+      "Made from 100% organic cotton",
+      "Comfortable and breathable",
+    ],
     stock: 200,
-  },
-  {
-    name: "Reusable Shopping Bag",
-    sku: "SKU11223",
-    price: "$8.75",
-    stock: 300,
-  },
-  { name: "Bamboo Toothbrush", sku: "SKU44556", price: "$4.20", stock: 100 },
-  {
-    name: "Recycled Paper Notebook",
-    sku: "SKU77889",
-    price: "$6.50",
-    stock: 250,
+    sku: "SKU67890",
   },
 ];
 
 const ProductManagement = () => {
   const [activeTab, setActiveTab] = useState("products");
   const [globalFilter, setGlobalFilter] = useState("");
+  const [isAddProductOpen, setIsAddProductOpen] = useState(false);
+  const [products, setProducts] = useState(initialProductData);
 
   const handleTabClick = (tab) => {
     setActiveTab(tab);
+  };
+
+  const handleAddProduct = (productData) => {
+    const newProduct = {
+      id: Date.now(),
+      ...productData,
+      sku: `SKU${Date.now().toString().slice(-6)}`,
+      stock: 0,
+    };
+    setProducts((prev) => [...prev, newProduct]);
+    console.log("New product added:", newProduct);
+  };
+
+  const handleEditProduct = (productId) => {
+    // Implement edit functionality
+    console.log("Edit product:", productId);
+  };
+
+  const handleDeleteProduct = (productId) => {
+    if (window.confirm("Are you sure you want to delete this product?")) {
+      setProducts((prev) => prev.filter((product) => product.id !== productId));
+    }
   };
 
   const columns = useMemo(
@@ -49,24 +90,91 @@ const ProductManagement = () => {
       {
         header: "Product Name",
         accessorKey: "name",
+        cell: ({ row }) => (
+          <div className="flex items-center gap-3">
+            <img
+              src={row.original.imageUrl}
+              alt={row.original.name}
+              className="w-10 h-10 object-cover rounded"
+            />
+            <div>
+              <div className="font-medium">{row.original.name}</div>
+              <div className="text-sm text-gray-500">{row.original.brand}</div>
+            </div>
+          </div>
+        ),
+      },
+      {
+        header: "SKU",
+        accessorKey: "sku",
       },
       {
         header: "Price",
         accessorKey: "price",
+        cell: ({ row }) => (
+          <div>
+            <div className="font-medium">
+              ₹{row.original.price.toLocaleString()}
+            </div>
+            {row.original.originalPrice > row.original.price && (
+              <div className="text-sm text-gray-500 line-through">
+                ₹{row.original.originalPrice.toLocaleString()}
+              </div>
+            )}
+          </div>
+        ),
+      },
+      {
+        header: "Rating",
+        accessorKey: "rating",
+        cell: ({ row }) => (
+          <div className="flex items-center gap-1">
+            <span className="text-yellow-500">★</span>
+            <span>{row.original.rating}</span>
+            <span className="text-gray-500">({row.original.reviewCount})</span>
+          </div>
+        ),
       },
       {
         header: "Stock",
         accessorKey: "stock",
+        cell: ({ row }) => (
+          <span
+            className={
+              row.original.stock === 0 ? "text-red-600 font-medium" : ""
+            }
+          >
+            {row.original.stock}
+          </span>
+        ),
+      },
+      {
+        header: "Badge",
+        accessorKey: "badge",
+        cell: ({ row }) =>
+          row.original.badge ? (
+            <span className="px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded-full">
+              {row.original.badge}
+            </span>
+          ) : null,
       },
       {
         header: "Actions",
-        cell: () => (
+        cell: ({ row }) => (
           <div className="flex gap-3">
-            <button className="text-blue-600 cursor-pointer flex items-center gap-1 hover:underline">
+            <button
+              onClick={() => handleEditProduct(row.original.id)}
+              className="text-blue-600 cursor-pointer flex items-center gap-1 hover:underline"
+            >
               <Edit size={16} />
+              Edit
             </button>
-            <button className="text-red-600 cursor-pointer flex items-center gap-1 hover:underline">
+            <button
+              onClick={() => handleDeleteProduct(row.original.id)}
+              className="text-red-600 cursor-pointer flex items-center gap-1 hover:underline"
+            >
               <Trash size={16} />
+              Delete
             </button>
           </div>
         ),
@@ -76,7 +184,7 @@ const ProductManagement = () => {
   );
 
   const table = useReactTable({
-    data: productData,
+    data: products,
     columns,
     state: {
       globalFilter,
@@ -92,7 +200,12 @@ const ProductManagement = () => {
       <main className="flex-1 p-8">
         <div className="flex items-center justify-between mb-6">
           <h1 className="text-2xl font-bold">Products</h1>
-          <button className="btn btn-primary">Add New Product</button>
+          <button
+            className="btn btn-primary"
+            onClick={() => setIsAddProductOpen(true)}
+          >
+            Add New Product
+          </button>
         </div>
 
         <input
@@ -139,6 +252,12 @@ const ProductManagement = () => {
             </tbody>
           </table>
         </div>
+
+        <AddProduct
+          isOpen={isAddProductOpen}
+          onClose={() => setIsAddProductOpen(false)}
+          onAddProduct={handleAddProduct}
+        />
       </main>
     </div>
   );
