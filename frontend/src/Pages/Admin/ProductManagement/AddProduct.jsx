@@ -1,7 +1,7 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import ModalComponent from "../../../component/ModalComponent";
 
-const AddProduct = ({ isOpen, onClose, onAddProduct }) => {
+const AddProduct = ({ isOpen, onClose, onAddProduct, isLoading = false }) => {
   const [formData, setFormData] = useState({
     name: "",
     brand: "",
@@ -15,6 +15,24 @@ const AddProduct = ({ isOpen, onClose, onAddProduct }) => {
     keyFeatures: [""],
     description: [""],
   });
+
+  useEffect(() => {
+    if (isOpen) {
+      setFormData({
+        name: "",
+        brand: "",
+        price: "",
+        originalPrice: "",
+        discount: "",
+        rating: "",
+        reviewCount: "",
+        badge: "",
+        imageUrl: "",
+        keyFeatures: [""],
+        description: [""],
+      });
+    }
+  }, [isOpen]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -75,7 +93,7 @@ const AddProduct = ({ isOpen, onClose, onAddProduct }) => {
       onClose={onClose}
       title="Add New Product"
       size="xl"
-      className="max-w-5xl w-full"
+      className="max-w-5xl ml-20 w-full"
     >
       <form onSubmit={handleSubmit} className="space-y-6">
         {/* Product Name */}
@@ -92,6 +110,7 @@ const AddProduct = ({ isOpen, onClose, onAddProduct }) => {
               placeholder="Enter Product Name..."
               className="input input-bordered w-full"
               required
+              disabled={isLoading}
             />
           </div>
 
@@ -108,6 +127,7 @@ const AddProduct = ({ isOpen, onClose, onAddProduct }) => {
               placeholder="Enter Product Brand..."
               className="input input-bordered w-full"
               required
+              disabled={isLoading}
             />
           </div>
 
@@ -124,6 +144,7 @@ const AddProduct = ({ isOpen, onClose, onAddProduct }) => {
               placeholder="Enter Original Price..."
               className="input input-bordered w-full"
               required
+              disabled={isLoading}
             />
           </div>
         </div>
@@ -142,6 +163,7 @@ const AddProduct = ({ isOpen, onClose, onAddProduct }) => {
               placeholder="Enter Price..."
               className="input input-bordered"
               required
+              disabled={isLoading}
             />
           </div>
 
@@ -157,6 +179,7 @@ const AddProduct = ({ isOpen, onClose, onAddProduct }) => {
               onChange={handleInputChange}
               placeholder="Enter Discount..."
               className="input input-bordered"
+              disabled={isLoading}
             />
           </div>
 
@@ -175,6 +198,7 @@ const AddProduct = ({ isOpen, onClose, onAddProduct }) => {
               min="0"
               max="5"
               className="input input-bordered"
+              disabled={isLoading}
             />
           </div>
         </div>
@@ -192,6 +216,7 @@ const AddProduct = ({ isOpen, onClose, onAddProduct }) => {
               onChange={handleInputChange}
               placeholder="Enter Reviews Count..."
               className="input input-bordered"
+              disabled={isLoading}
             />
           </div>
 
@@ -205,6 +230,7 @@ const AddProduct = ({ isOpen, onClose, onAddProduct }) => {
               value={formData.badge}
               onChange={handleInputChange}
               className="select select-bordered"
+              disabled={isLoading}
             >
               <option value="">Select Badge</option>
               <option value="Best Seller">Best Seller</option>
@@ -230,6 +256,7 @@ const AddProduct = ({ isOpen, onClose, onAddProduct }) => {
                 }
                 placeholder="Enter Key Features of Product..."
                 className="input input-bordered flex-1"
+                disabled={isLoading}
               />
               {formData.keyFeatures.length > 1 && (
                 <button
@@ -266,6 +293,7 @@ const AddProduct = ({ isOpen, onClose, onAddProduct }) => {
                 }
                 placeholder="Enter a description point..."
                 className="input input-bordered flex-1"
+                disabled={isLoading}
               />
               {formData.description.length > 1 && (
                 <button
@@ -305,10 +333,19 @@ const AddProduct = ({ isOpen, onClose, onAddProduct }) => {
 
         {/* Form Actions */}
         <div className="modal-action">
-          <button type="submit" className="btn btn-primary">
-            Add Product
+          <button
+            type="submit"
+            className="btn btn-primary"
+            disabled={isLoading}
+          >
+            {isLoading ? "Adding..." : "Add Product"}
           </button>
-          <button type="button" onClick={onClose} className="btn btn-ghost">
+          <button
+            type="button"
+            onClick={onClose}
+            className="btn btn-ghost"
+            disabled={isLoading}
+          >
             Cancel
           </button>
         </div>

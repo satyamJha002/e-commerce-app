@@ -122,11 +122,6 @@ const Header = () => {
                       Profile
                     </a>
                   </li>
-                  <li>
-                    <button onClick={handleLogout} className="text-red-500">
-                      Logout
-                    </button>
-                  </li>
                   {userInfo.isAdmin && (
                     <li>
                       <a
@@ -137,6 +132,11 @@ const Header = () => {
                       </a>
                     </li>
                   )}
+                  <li>
+                    <button onClick={handleLogout} className="text-red-500">
+                      Logout
+                    </button>
+                  </li>
                 </>
               ) : (
                 <>
