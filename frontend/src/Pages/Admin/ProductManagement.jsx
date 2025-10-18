@@ -1,12 +1,13 @@
 import React, { useMemo, useState } from "react";
 import AdminSidePanel from "../../component/AdminSidePanel";
 import { toast } from "react-toastify";
-import { Edit, Trash } from "lucide-react";
+import { ChevronsLeft, ChevronsRight, Edit, Trash } from "lucide-react";
 import {
   useReactTable,
   getCoreRowModel,
   getFilteredRowModel,
   flexRender,
+  getPaginationRowModel,
 } from "@tanstack/react-table";
 import AddProduct from "./ProductManagement/AddProduct";
 import {
@@ -18,7 +19,7 @@ import LoadingSpinner from "../../component/Loader/LoadingSpinner";
 /* const initialProductData = [
   {
     id: 1,
-    name: "Ultraboost 22",
+    name: "Ultraboost 22",`
     brand: "Adidas",
     price: 15999,
     originalPrice: 18999,
@@ -64,6 +65,10 @@ const ProductManagement = () => {
   const [activeTab, setActiveTab] = useState("products");
   const [globalFilter, setGlobalFilter] = useState("");
   const [isAddProductOpen, setIsAddProductOpen] = useState(false);
+  const [pagination, setPagination] = useState({
+    pageIndex: 0,
+    pageSize: 5,
+  });
 
   const {
     data: productsData,
@@ -74,7 +79,7 @@ const ProductManagement = () => {
 
   const [createProduct, { isLoading: isCreating }] = useCreateProductMutation();
 
-  console.log("Product data: ", productsData); // product data showing undefined
+  // console.log("Product data: ", productsData); // product data showing undefined
 
   const handleTabClick = (tab) => {
     setActiveTab(tab);
@@ -100,7 +105,7 @@ const ProductManagement = () => {
 
   const handleDeleteProduct = (productId) => {
     if (window.confirm("Are you sure you want to delete this product?")) {
-      setProducts((prev) => prev.filter((product) => product.id !== productId));
+      console.log("Delete product:", productId);
     }
   };
 
@@ -164,6 +169,15 @@ const ProductManagement = () => {
         ),
       },
       {
+        header: "Category",
+        accessorKey: "category",
+        cell: ({ row }) => (
+          <span className="px-2 py-1 bg-gray-100 text-gray-800 text-xs rounded-full">
+            {row.original.category}
+          </span>
+        ),
+      },
+      {
         header: "Badge",
         accessorKey: "badge",
         cell: ({ row }) =>
@@ -209,6 +223,8 @@ const ProductManagement = () => {
     onGlobalFilterChange: setGlobalFilter,
     getCoreRowModel: getCoreRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
+    getPaginationRowModel: getPaginationRowModel(),
+    manualPagination: false,
   });
 
   if (isLoading) {
@@ -301,8 +317,100 @@ const ProductManagement = () => {
         </div>
 
         {products.length === 0 && (
-          <div className="text-center py-8 text-gray-500">
-            No products found. Add your first product!
+          <div className="text-center py-12 text-gray-500 bg-gray-50 rounded-lg">
+            <p className="text-lg mb-2">No products found</p>
+            <p className="text-sm">Add your first product to get started!</p>
+          </div>
+        )}
+
+        {products.length > 0 && (
+          <div className="flex items-center justify-between border-t border-gray-200 pt-4">
+            <div className="flex items-center gap-2 text-sm text-gray-600">
+              <span>Page</span>
+              <strong>
+                {table.getState().pagination.pageIndex + 1} of{" "}
+                {table.getPageCount()}
+              </strong>
+            </div>
+
+            <div className="flex items-center gap-2">
+              {/* First Page */}
+              <button
+                className="btn btn-sm btn-ghost"
+                onClick={() => table.setPageIndex(0)}
+                disabled={!table.getCanPreviousPage()}
+              >
+                <ChevronsLeft size={16} />
+              </button>
+
+              {/* Previous Page */}
+              <button
+                className="btn btn-sm btn-ghost"
+                onClick={() => table.previousPage()}
+                disabled={!table.getCanPreviousPage()}
+              >
+                <ChevronsLeft size={16} />
+              </button>
+
+              {/* Page Numbers */}
+              <div className="flex items-center gap-1 mx-2">
+                {Array.from(
+                  { length: Math.min(5, table.getPageCount()) },
+                  (_, i) => {
+                    const pageIndex = i;
+                    return (
+                      <button
+                        key={pageIndex}
+                        className={`btn btn-sm ${
+                          table.getState().pagination.pageIndex === pageIndex
+                            ? "btn-primary"
+                            : "btn-ghost"
+                        }`}
+                        onClick={() => table.setPageIndex(pageIndex)}
+                      >
+                        {pageIndex + 1}
+                      </button>
+                    );
+                  }
+                )}
+              </div>
+
+              {/* Next Page */}
+              <button
+                className="btn btn-sm btn-ghost"
+                onClick={() => table.nextPage()}
+                disabled={!table.getCanNextPage()}
+              >
+                <ChevronsRight size={16} />
+              </button>
+
+              {/* Last Page */}
+              <button
+                className="btn btn-sm btn-ghost"
+                onClick={() => table.setPageIndex(table.getPageCount() - 1)}
+                disabled={!table.getCanNextPage()}
+              >
+                <ChevronsRight size={16} />
+              </button>
+            </div>
+
+            <div className="flex items-center gap-2">
+              <span className="text-sm text-gray-600">Show:</span>
+              <select
+                className="select select-bordered select-sm"
+                value={table.getState().pagination.pageSize}
+                onChange={(e) => {
+                  table.setPageSize(Number(e.target.value));
+                }}
+              >
+                {[5, 10, 20, 30, 40, 50].map((pageSize) => (
+                  <option key={pageSize} value={pageSize}>
+                    {pageSize}
+                  </option>
+                ))}
+              </select>
+              <span className="text-sm text-gray-600">per page</span>
+            </div>
           </div>
         )}
 
