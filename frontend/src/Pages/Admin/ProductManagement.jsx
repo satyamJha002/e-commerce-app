@@ -1,5 +1,6 @@
 import React, { useMemo, useState } from "react";
 import AdminSidePanel from "../../component/AdminSidePanel";
+import { toast } from "react-toastify";
 import { Edit, Trash } from "lucide-react";
 import {
   useReactTable,
@@ -8,8 +9,12 @@ import {
   flexRender,
 } from "@tanstack/react-table";
 import AddProduct from "./ProductManagement/AddProduct";
+import {
+  useGetAllProductsQuery,
+  useCreateProductMutation,
+} from "../../slices/productApiSlice";
 
-const initialProductData = [
+/* const initialProductData = [
   {
     id: 1,
     name: "Ultraboost 22",
@@ -52,26 +57,37 @@ const initialProductData = [
     sku: "SKU67890",
   },
 ];
+ */
 
 const ProductManagement = () => {
   const [activeTab, setActiveTab] = useState("products");
   const [globalFilter, setGlobalFilter] = useState("");
   const [isAddProductOpen, setIsAddProductOpen] = useState(false);
-  const [products, setProducts] = useState(initialProductData);
+
+  const {
+    data: productsData,
+    isLoading,
+    error,
+    refetch,
+  } = useGetAllProductsQuery();
+
+  const [createProduct, { isLoading: isCreating }] = useCreateProductMutation();
 
   const handleTabClick = (tab) => {
     setActiveTab(tab);
   };
 
-  const handleAddProduct = (productData) => {
-    const newProduct = {
-      id: Date.now(),
-      ...productData,
-      sku: `SKU${Date.now().toString().slice(-6)}`,
-      stock: 0,
-    };
-    setProducts((prev) => [...prev, newProduct]);
-    console.log("New product added:", newProduct);
+  const handleAddProduct = async (productData) => {
+    try {
+      const result = await createProduct(productData).unwrap();
+      toast.success("Product created successfully");
+      console.log("Created success", result);
+
+      refetch();
+    } catch (error) {
+      console.error("Failed to create product", error);
+      toast.error("Failed to create product");
+    }
   };
 
   const handleEditProduct = (productId) => {
@@ -183,6 +199,8 @@ const ProductManagement = () => {
     []
   );
 
+  const products = productsData?.products || productsData || [];
+
   const table = useReactTable({
     data: products,
     columns,
@@ -194,6 +212,37 @@ const ProductManagement = () => {
     getFilteredRowModel: getFilteredRowModel(),
   });
 
+  if (isLoading) {
+    return (
+      <div className="flex min-h-screen bg-background-light dark:bg-background-dark">
+        <AdminSidePanel activeTab={activeTab} handleTabClick={handleTabClick} />
+        <main className="flex-1 p-8">
+          <div className="flex justify-center items-center h-64">
+            <div className="text-lg">Loading products...</div>
+          </div>
+        </main>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="flex min-h-screen bg-background-light dark:bg-background-dark">
+        <AdminSidePanel activeTab={activeTab} handleTabClick={handleTabClick} />
+        <main className="flex-1 p-8">
+          <div className="alert alert-error">
+            <div>
+              Error loading products: {error.data?.message || error.message}
+            </div>
+            <button onClick={refetch} className="btn btn-sm btn-outline">
+              Retry
+            </button>
+          </div>
+        </main>
+      </div>
+    );
+  }
+
   return (
     <div className="flex min-h-screen bg-background-light dark:bg-background-dark font-display">
       <AdminSidePanel activeTab={activeTab} handleTabClick={handleTabClick} />
@@ -203,8 +252,9 @@ const ProductManagement = () => {
           <button
             className="btn btn-primary"
             onClick={() => setIsAddProductOpen(true)}
+            disabled={isCreating}
           >
-            Add New Product
+            {isCreating ? "Adding..." : "Add New Product"}
           </button>
         </div>
 
@@ -225,7 +275,7 @@ const ProductManagement = () => {
                   {headerGroup.headers.map((header) => (
                     <th
                       key={header.id}
-                      className="text-left text-cyan-600  px-4 py-2"
+                      className="text-left text-cyan-600 px-4 py-2"
                     >
                       {flexRender(
                         header.column.columnDef.header,
@@ -238,7 +288,7 @@ const ProductManagement = () => {
             </thead>
             <tbody>
               {table.getRowModel().rows.map((row) => (
-                <tr key={row.id} className="hover:bg-gray-500">
+                <tr key={row.id} className="hover:bg-gray-50">
                   {row.getVisibleCells().map((cell) => (
                     <td key={cell.id} className="px-4 py-2">
                       {flexRender(
@@ -253,10 +303,17 @@ const ProductManagement = () => {
           </table>
         </div>
 
+        {products.length === 0 && (
+          <div className="text-center py-8 text-gray-500">
+            No products found. Add your first product!
+          </div>
+        )}
+
         <AddProduct
           isOpen={isAddProductOpen}
           onClose={() => setIsAddProductOpen(false)}
           onAddProduct={handleAddProduct}
+          isLoading={isCreating}
         />
       </main>
     </div>

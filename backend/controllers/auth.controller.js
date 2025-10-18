@@ -115,43 +115,48 @@ const login = asyncHandler(async (req, res) => {
 });
 
 const refreshToken = asyncHandler(async (req, res) => {
-  const { refreshToken } = req.cookies;
+  const token = req.cookies?.token;
 
-  if (!refreshToken) {
+  if (!token) {
     res.status(401);
-    throw new Error("Refresh Token is required");
+    throw new Error("No token in found");
   }
 
-  const decoded = jwt.verify(refreshToken, process.env.REFRESH_SCRET);
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const auth = await Auth.findById(decoded.id).select("-password");
 
-  const auth = Auth.findOne({
-    _id: decoded.userId,
-    refreshToken: refreshToken,
-  });
+    if (auth) {
+      res.status(401);
+      throw new Error("User not found");
+    }
 
-  if (!auth) {
+    const newToken = generateToken(auth._id);
+
+    res.cookie("token", newToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "development",
+      sameSite: "strict",
+      maxAge: 30 * 24 * 60 * 60 * 1000,
+      path: "/",
+    });
+
+    res.status(200).json({
+      message: "Token refreshed successfully",
+      token: newToken,
+    });
+  } catch (error) {
+    res.cookie("token", "", {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "development",
+      sameSite: "strict",
+      path: "/",
+      expires: new Date(0),
+    });
+
     res.status(401);
-    throw new Error("Invalid refresh token");
+    throw new Error("Token expired, please login again");
   }
-
-  const newAccessToken = generateToken(auth._id);
-
-  res.cookie("token", newAccessToken, {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: "strict",
-    maxAge: 15 * 60 * 1000, // 15 minutes
-    path: "/",
-  });
-
-  res.status(200).json({
-    _id: auth._id,
-    email: auth.email,
-    username: auth.username,
-    role: auth.role,
-    isAdmin: auth.isAdmin,
-    token: newAccessToken,
-  });
 });
 
 const getMe = asyncHandler(async (req, res) => {
