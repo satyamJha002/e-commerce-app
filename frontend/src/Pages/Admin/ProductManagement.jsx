@@ -117,7 +117,7 @@ const ProductManagement = () => {
         cell: ({ row }) => (
           <div className="flex items-center gap-3">
             <img
-              src={row.original.image[0]}
+              src={row.original.images[0]}
               alt={row.original.name}
               className="w-10 h-10 object-cover rounded"
             />
@@ -288,7 +288,7 @@ const ProductManagement = () => {
                   {headerGroup.headers.map((header) => (
                     <th
                       key={header.id}
-                      className="text-left text-cyan-600 px-4 py-2"
+                      className="text-left text-cyan-600 px-4 py-2 whitespace-nowrap"
                     >
                       {flexRender(
                         header.column.columnDef.header,
@@ -303,7 +303,7 @@ const ProductManagement = () => {
               {table.getRowModel().rows.map((row) => (
                 <tr key={row.id} className="hover:bg-gray-800">
                   {row.getVisibleCells().map((cell) => (
-                    <td key={cell.id} className="px-4 py-2">
+                    <td key={cell.id} className="px-4 py-2 whitespace-nowrap">
                       {flexRender(
                         cell.column.columnDef.cell,
                         cell.getContext()
