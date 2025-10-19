@@ -1,10 +1,12 @@
 import asyncHandler from "../middleware/asyncHandler.js";
 import Product from "../models/product.model.js";
+import {
+  uploadMultipleToCloudinary,
+  deleteFromCloudinary,
+} from "../utils/cloudinary.js";
 
 const creatProducts = asyncHandler(async (req, res) => {
-  const user = req.user; //undefined
-
-  console.log("Reason not creating product", user);
+  const user = req.user;
 
   if (!user) {
     res.status(401);
@@ -16,7 +18,6 @@ const creatProducts = asyncHandler(async (req, res) => {
     description,
     keyFeatures,
     price,
-    image,
     brand,
     category,
     countInStock,
@@ -30,7 +31,6 @@ const creatProducts = asyncHandler(async (req, res) => {
     description,
     keyFeatures,
     price,
-    image,
     brand,
     category,
     countInStock,
@@ -45,6 +45,32 @@ const creatProducts = asyncHandler(async (req, res) => {
     throw new Error(`Missing required fields: ${missingFields.join(", ")}`);
   }
 
+  let imageUrls = [];
+  if (req.files && req.files.length > 0) {
+    try {
+      console.log(`Uploading ${req.files.length} files to Cloudinary...`);
+
+      const uploadResults = await uploadMultipleToCloudinary(req.files, {
+        folder: "ecommerce-products",
+        transformation: [
+          { width: 800, height: 800, crop: "limit", quality: "auto" },
+        ],
+      });
+
+      imageUrls = uploadResults.map((result) => result.secure_url);
+      console.log("Successfully uploaded images to cloudinary:", imageUrls);
+    } catch (error) {
+      console.error("Error uploading images to Cloudinary:", error);
+      res.status(500);
+      throw new Error("Failed to upload images");
+    }
+  }
+
+  if (imageUrls.length === 0) {
+    res.status(400);
+    throw new Error("At least one product image is required");
+  }
+
   const transformedKeyFeatures = Array.isArray(keyFeatures)
     ? keyFeatures
     : typeof keyFeatures === "string"
@@ -54,9 +80,14 @@ const creatProducts = asyncHandler(async (req, res) => {
         .filter((s) => s)
     : [];
 
-  const transformedImages = Array.isArray(image)
-    ? image
-    : [image].filter(Boolean);
+  const transformedDescription = Array.isArray(description)
+    ? description
+    : typeof description === "string"
+    ? description
+        .split("\n")
+        .map((s) => s.trim())
+        .filter((s) => s)
+    : [];
 
   const calculatedDiscount =
     discount ??
@@ -67,12 +98,12 @@ const creatProducts = asyncHandler(async (req, res) => {
   const product = new Product({
     user: user._id,
     name: name.trim(),
-    description: description.trim(),
+    description: transformedDescription,
     keyFeatures: transformedKeyFeatures,
     price: Number(price),
     originalPrice: Number(originalPrice || price),
     discount: calculatedDiscount,
-    image: transformedImages,
+    images: imageUrls,
     brand: brand.trim(),
     badge: (badge || "").trim(),
     category: category.trim(),
@@ -204,7 +235,31 @@ const getProducts = asyncHandler(async (req, res) => {
 
 const getProductById = asyncHandler(async (req, res) => {});
 
-const deleteProductById = asyncHandler(async (req, res) => {});
+const deleteProductById = asyncHandler(async (req, res) => {
+  const product = await Product.findById(req.params.id);
+
+  if (!product) {
+    res.status(404);
+    throw new Error("Product not found");
+  }
+
+  if (product.image && product.image.length > 0) {
+    try {
+      const deletePromises = product.image.map(async (imageUrl) => {
+        const publicId = imageUrl.split("/").pop().split(".")[0];
+        return await deleteFromCloudinary(publicId);
+      });
+
+      await Promise.all(deletePromises);
+    } catch (error) {
+      console.error("Error deleting images from Cloudinary:", error);
+    }
+  }
+
+  await Product.findByIdAndDelete(req.params.id);
+
+  res.json({ success: true, message: "Product deleted successfully" });
+});
 
 const updateProductById = asyncHandler(async (req, res) => {});
 
