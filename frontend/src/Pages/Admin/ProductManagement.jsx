@@ -13,6 +13,8 @@ import AddProduct from "./ProductManagement/AddProduct";
 import {
   useGetAllProductsQuery,
   useCreateProductMutation,
+  useDeleteProductMutation,
+  useUpdateProductByIdMutation,
 } from "../../slices/productApiSlice";
 import LoadingSpinner from "../../component/Loader/LoadingSpinner";
 
@@ -69,6 +71,8 @@ const ProductManagement = () => {
     pageIndex: 0,
     pageSize: 5,
   });
+  const [selectedProduct, setSelectedProduct] = useState(null);
+  const [isEditProductOpen, setIsEditProductOpen] = useState(false);
 
   const {
     data: productsData,
@@ -79,7 +83,10 @@ const ProductManagement = () => {
 
   const [createProduct, { isLoading: isCreating }] = useCreateProductMutation();
 
-  // console.log("Product data: ", productsData); // product data showing undefined
+  const [deleteProduct] = useDeleteProductMutation();
+
+  const [updateProductById, { isLoading: isUpdating }] =
+    useUpdateProductByIdMutation();
 
   const handleTabClick = (tab) => {
     setActiveTab(tab);
@@ -98,14 +105,46 @@ const ProductManagement = () => {
     }
   };
 
-  const handleEditProduct = (productId) => {
-    // Implement edit functionality
-    console.log("Edit product:", productId);
+  const handleEditProduct = (product) => {
+    console.log("Product ID:", product._id);
+    console.log("Product ID type:", typeof product._id);
+
+    setSelectedProduct(product);
+
+    setIsEditProductOpen(true);
   };
 
-  const handleDeleteProduct = (productId) => {
-    if (window.confirm("Are you sure you want to delete this product?")) {
-      console.log("Delete product:", productId);
+  const handleUpdateProduct = async (id, updatedData) => {
+    console.log("handle update function: ", id);
+    console.log("handle update function: ", typeof id);
+
+    if (!id || typeof id !== "string") {
+      toast.error("Invalid product id");
+      return;
+    }
+
+    try {
+      await updateProductById({ id, data: updatedData }).unwrap();
+      toast.success("Product updated successfully");
+      refetch();
+    } catch (error) {
+      console.error("Update failed", error);
+      toast.error("Failed to update product", error);
+    }
+  };
+
+  const handleDeleteProduct = async (productId) => {
+    if (!productId) {
+      toast.error("Invalid product ID");
+      return;
+    }
+    try {
+      await deleteProduct(productId).unwrap();
+      toast.success("Product delete successfully");
+      refetch();
+    } catch (error) {
+      console.log("Error", error);
+      toast.error("Failed to delete product ---->>", error);
     }
   };
 
@@ -192,14 +231,14 @@ const ProductManagement = () => {
         cell: ({ row }) => (
           <div className="flex gap-3">
             <button
-              onClick={() => handleEditProduct(row.original.id)}
+              onClick={() => handleEditProduct(row.original)}
               className="text-blue-600 cursor-pointer flex items-center gap-1 hover:underline"
             >
               <Edit size={16} />
               Edit
             </button>
             <button
-              onClick={() => handleDeleteProduct(row.original.id)}
+              onClick={() => handleDeleteProduct(row.original._id)}
               className="text-red-600 cursor-pointer flex items-center gap-1 hover:underline"
             >
               <Trash size={16} />
@@ -419,6 +458,15 @@ const ProductManagement = () => {
           onClose={() => setIsAddProductOpen(false)}
           onAddProduct={handleAddProduct}
           isLoading={isCreating}
+        />
+
+        <AddProduct
+          isOpen={isEditProductOpen}
+          onClose={() => setIsEditProductOpen(false)}
+          onEditProduct={handleUpdateProduct}
+          existingProduct={selectedProduct}
+          isEditMode={true}
+          isLoading={isUpdating}
         />
       </main>
     </div>

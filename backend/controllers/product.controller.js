@@ -233,19 +233,44 @@ const getProducts = asyncHandler(async (req, res) => {
   }
 });
 
-const getProductById = asyncHandler(async (req, res) => {});
+const getProductById = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const product = await Product.findById(id)
+      .populate("user", "name email")
+      .populate("reviews.user", "name email");
+
+    if (!product) {
+      res.status(404);
+      throw new Error("Product not found");
+    }
+
+    return res.status(200).json({
+      success: true,
+      message: "Product retrieved successfully",
+      product,
+    });
+  } catch (error) {
+    console.error("Product retrieved failed", error);
+    res.status(500);
+    throw new Error("Server Error", error);
+  }
+});
 
 const deleteProductById = asyncHandler(async (req, res) => {
   const product = await Product.findById(req.params.id);
+
+  console.log("Product id", product); // null
 
   if (!product) {
     res.status(404);
     throw new Error("Product not found");
   }
 
-  if (product.image && product.image.length > 0) {
+  if (product.images && product.images.length > 0) {
     try {
-      const deletePromises = product.image.map(async (imageUrl) => {
+      const deletePromises = product.images.map(async (imageUrl) => {
         const publicId = imageUrl.split("/").pop().split(".")[0];
         return await deleteFromCloudinary(publicId);
       });
@@ -261,7 +286,135 @@ const deleteProductById = asyncHandler(async (req, res) => {
   res.json({ success: true, message: "Product deleted successfully" });
 });
 
-const updateProductById = asyncHandler(async (req, res) => {});
+const updateProductById = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+  const user = req.user;
+
+  if (!user) {
+    res.status(401);
+    throw new Error("Not authorized to update this product");
+  }
+
+  const {
+    name,
+    description,
+    keyFeatures,
+    price,
+    originalPrice,
+    discount,
+    brand,
+    badge,
+    category,
+    rating,
+    countInStock,
+  } = req.body;
+
+  try {
+    const existingProduct = await Product.findById(id);
+    if (!existingProduct) {
+      res.status(404);
+      throw new Error("Product not found");
+    }
+
+    let updateImages = existingProduct.images;
+    if (req.files && req.files.length > 0) {
+      console.log(`Uploading ${req.files.length} files to Cloudinary...`);
+
+      const uploadResults = await uploadMultipleToCloudinary(req.files, {
+        folder: "ecommerce-products",
+        transformation: [
+          { width: 800, height: 800, crop: "limit", quality: "auto" },
+        ],
+      });
+
+      console.log("Upload Results");
+
+      const newImageUrls = uploadResults.map((result) => result.secure_url);
+      updateImages = [...newImageUrls];
+    }
+
+    // Prepare update object
+    const updateFields = {};
+
+    if (name) updateFields.name = name.trim();
+    if (brand) updateFields.brand = brand.trim();
+    if (category) updateFields.category = category.trim();
+    if (price) updateFields.price = Number(price);
+    if (originalPrice) updateFields.originalPrice = Number(originalPrice);
+    if (discount !== undefined && discount !== "")
+      updateFields.discount = Number(discount);
+    if (badge !== undefined) updateFields.badge = badge.trim();
+    if (rating !== undefined && rating !== "")
+      updateFields.rating = Number(rating);
+    if (countInStock !== undefined && countInStock !== "")
+      updateFields.countInStock = Number(countInStock);
+    if (req.files && req.files.length > 0) updateFields.images = updateImages;
+
+    // Handle array fields
+    if (keyFeatures) {
+      if (Array.isArray(keyFeatures)) {
+        updateFields.keyFeatures = keyFeatures;
+      } else if (typeof keyFeatures === "string") {
+        try {
+          const parsed = JSON.parse(keyFeatures);
+          updateFields.keyFeatures = Array.isArray(parsed)
+            ? parsed
+            : [keyFeatures];
+        } catch {
+          updateFields.keyFeatures = keyFeatures.includes(",")
+            ? keyFeatures
+                .split(",")
+                .map((s) => s.trim())
+                .filter((s) => s)
+            : [keyFeatures];
+        }
+      }
+    }
+
+    if (description) {
+      if (Array.isArray(description)) {
+        updateFields.description = description;
+      } else if (typeof description === "string") {
+        try {
+          const parsed = JSON.parse(description);
+          updateFields.description = Array.isArray(parsed)
+            ? parsed
+            : [description];
+        } catch {
+          updateFields.description = description.includes("\n")
+            ? description
+                .split("\n")
+                .map((s) => s.trim())
+                .filter((s) => s)
+            : [description];
+        }
+      }
+    }
+
+    // Recalculate discount if needed
+    if ((discount === undefined || discount === "") && originalPrice && price) {
+      updateFields.discount = Math.round(
+        ((Number(originalPrice) - Number(price)) / Number(originalPrice)) * 100
+      );
+    }
+
+    const updatedProduct = await Product.findByIdAndUpdate(
+      id,
+      { $set: updateFields },
+      { new: true, runValidators: true }
+    );
+
+    res.status(200).json({
+      success: true,
+      message: "Product is updated successfully",
+      product: updatedProduct,
+    });
+  } catch (error) {
+    console.error("Product update failed", error);
+    res.status(500);
+    throw new Error("Server Error: " + error.message);
+  }
+});
 
 export {
   creatProducts,

@@ -3,7 +3,15 @@ import React, { useState, useEffect } from "react";
 import ModalComponent from "../../../component/ModalComponent";
 import { LucideX } from "lucide-react";
 
-const AddProduct = ({ isOpen, onClose, onAddProduct, isLoading = false }) => {
+const AddProduct = ({
+  isOpen,
+  onClose,
+  onAddProduct,
+  onEditProduct,
+  isLoading = false,
+  existingProduct = null,
+  isEditMode = false,
+}) => {
   const [formData, setFormData] = useState({
     name: "",
     brand: "",
@@ -23,6 +31,24 @@ const AddProduct = ({ isOpen, onClose, onAddProduct, isLoading = false }) => {
 
   useEffect(() => {
     if (isOpen) {
+      if (isEditMode && existingProduct) {
+        setFormData({
+          name: existingProduct.name || "",
+          brand: existingProduct.brand || "",
+          price: existingProduct.price || "",
+          originalPrice: existingProduct.originalPrice || "",
+          discount: existingProduct.discount || "",
+          rating: existingProduct.rating || "",
+          reviewCount: existingProduct.numReviews || "",
+          badge: existingProduct.badge || "",
+          category: existingProduct.category || "",
+          countInStock: existingProduct.countInStock || "",
+          keyFeatures: existingProduct.keyFeatures || [""],
+          description: existingProduct.description || [""],
+        });
+        setProductImages(existingProduct.images || []);
+      }
+    } else {
       setFormData({
         name: "",
         brand: "",
@@ -39,7 +65,7 @@ const AddProduct = ({ isOpen, onClose, onAddProduct, isLoading = false }) => {
       });
       setProductImages([]);
     }
-  }, [isOpen]);
+  }, [isOpen, isEditMode, existingProduct]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -107,13 +133,11 @@ const AddProduct = ({ isOpen, onClose, onAddProduct, isLoading = false }) => {
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    // Validate that we have at least one image
     if (productImages.length === 0) {
       alert("Please upload at least one product image");
       return;
     }
 
-    // Create FormData for file upload
     const formDataToSend = new FormData();
 
     // Append all form fields
@@ -133,11 +157,16 @@ const AddProduct = ({ isOpen, onClose, onAddProduct, isLoading = false }) => {
 
     // Append images - field name must match what multer expects
     productImages.forEach((file) => {
-      formDataToSend.append("images", file); // Field name must be 'images'
+      if (file instanceof File) formDataToSend.append("images", file);
     });
 
-    // Call the parent function with FormData
-    onAddProduct(formDataToSend);
+    if (isEditMode && existingProduct) {
+      const productId = String(existingProduct._id);
+      onEditProduct(productId, formDataToSend);
+    } else {
+      onAddProduct(formDataToSend);
+    }
+
     onClose();
   };
 
@@ -145,7 +174,7 @@ const AddProduct = ({ isOpen, onClose, onAddProduct, isLoading = false }) => {
     <ModalComponent
       isOpen={isOpen}
       onClose={onClose}
-      title="Add New Product"
+      title={isEditMode ? "Edit Product" : "Add New Product"}
       size="xl"
       className="max-w-5xl w-full modal-scrollable"
     >
@@ -291,9 +320,15 @@ const AddProduct = ({ isOpen, onClose, onAddProduct, isLoading = false }) => {
             >
               <option value="">Select Badge</option>
               <option value="Best Seller">Best Seller</option>
+              <option value="Hot Deal">Hot Deal</option>
+              <option value="Top Rated">Top Rated</option>
               <option value="New Arrival">New Arrival</option>
+              <option value="Popular Choice">Popular Choice</option>
+              <option value="Editor's Choice">Editor's Choice</option>
               <option value="Limited Edition">Limited Edition</option>
+              <option value="Eco Friendly">Eco Friendly</option>
               <option value="Sale">Sale</option>
+              <option value="Trending">Trending</option>
             </select>
           </div>
 
@@ -312,8 +347,8 @@ const AddProduct = ({ isOpen, onClose, onAddProduct, isLoading = false }) => {
               <option value="">Select Category</option>
               <option value="Electronics">Electronics</option>
               <option value="Fashion">Fashion</option>
-              <option value="Home & Garden">Home & Garden</option>
-              <option value="Sports">Sports</option>
+              <option value="Home & Kitchen">Home & Kitchen</option>
+              <option value="Sports">Sport</option>
             </select>
           </div>
         </div>
@@ -485,9 +520,15 @@ const AddProduct = ({ isOpen, onClose, onAddProduct, isLoading = false }) => {
           <button
             type="submit"
             className="btn btn-primary"
-            disabled={isLoading || productImages.length === 0}
+            disabled={isLoading}
           >
-            {isLoading ? "Adding..." : "Add Product"}
+            {isLoading
+              ? isEditMode
+                ? "Updating..."
+                : "Adding..."
+              : isEditMode
+              ? "Save Changes"
+              : "Add Product"}
           </button>
           <button
             type="button"

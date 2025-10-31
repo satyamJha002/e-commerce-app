@@ -19,10 +19,15 @@ router.post(
   creatProducts
 );
 router.get("/allproducts", getProducts);
-router.get("/:productId", getProductById);
-router.delete("/:productId", protectAuthMiddleware, admin, deleteProductById);
+router.get("/getproductdetails/:id", getProductById);
+router.delete(
+  "/deleteproduct/:id",
+  protectAuthMiddleware,
+  admin,
+  deleteProductById
+);
 router.patch(
-  "/product/:id",
+  "/updateproduct/:id",
   protectAuthMiddleware,
   admin,
   uploadMultiple("images"),
