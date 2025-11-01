@@ -1,7 +1,8 @@
+// Categories.jsx
 import React, { useMemo, useState } from "react";
-import AdminSidePanel from "../../component/AdminSidePanel";
+import AdminSidePanel from "../../../../component/AdminSidePanel";
 import { toast } from "react-toastify";
-import { ChevronsLeft, ChevronsRight, Edit, Trash } from "lucide-react";
+import { ChevronsLeft, ChevronsRight, Edit, Trash, Plus } from "lucide-react";
 import {
   useReactTable,
   getCoreRowModel,
@@ -9,109 +10,148 @@ import {
   flexRender,
   getPaginationRowModel,
 } from "@tanstack/react-table";
-import AddProduct from "./ProductManagement/AddProduct";
-import {
-  useGetAllProductsQuery,
-  useCreateProductMutation,
-  useDeleteProductMutation,
-  useUpdateProductByIdMutation,
-} from "../../slices/productApiSlice";
-import LoadingSpinner from "../../component/Loader/LoadingSpinner";
+import AddCategories from "./AddCategories";
+import LoadingSpinner from "../../../../component/Loader/LoadingSpinner";
 
-const ProductManagement = () => {
-  const [activeTab, setActiveTab] = useState("products");
+// Mock data - replace with actual API calls
+const mockCategories = [
+  {
+    id: 1,
+    name: "Electronics",
+    description: "Electronic devices and accessories",
+    image: "https://via.placeholder.com/50",
+    productCount: 150,
+    status: "Active",
+    createdAt: "2024-01-15",
+  },
+  {
+    id: 2,
+    name: "Clothing",
+    description: "Men's and women's clothing",
+    image: "https://via.placeholder.com/50",
+    productCount: 89,
+    status: "Active",
+    createdAt: "2024-01-10",
+  },
+  {
+    id: 3,
+    name: "Home & Garden",
+    description: "Home decor and garden supplies",
+    image: "https://via.placeholder.com/50",
+    productCount: 67,
+    status: "Active",
+    createdAt: "2024-01-05",
+  },
+  {
+    id: 4,
+    name: "Sports",
+    description: "Sports equipment and accessories",
+    image: "https://via.placeholder.com/50",
+    productCount: 42,
+    status: "Inactive",
+    createdAt: "2024-01-01",
+  },
+  {
+    id: 5,
+    name: "Books",
+    description: "Fiction and non-fiction books",
+    image: "https://via.placeholder.com/50",
+    productCount: 234,
+    status: "Active",
+    createdAt: "2023-12-28",
+  },
+];
+
+const Categories = () => {
+  const [activeTab, setActiveTab] = useState("categories");
   const [globalFilter, setGlobalFilter] = useState("");
-  const [isAddProductOpen, setIsAddProductOpen] = useState(false);
-  const [pagination, setPagination] = useState({
-    pageIndex: 0,
-    pageSize: 5,
-  });
-  const [selectedProduct, setSelectedProduct] = useState(null);
-  const [isEditProductOpen, setIsEditProductOpen] = useState(false);
-
-  const {
-    data: productsData,
-    isLoading,
-    error,
-    refetch,
-  } = useGetAllProductsQuery();
-
-  const [createProduct, { isLoading: isCreating }] = useCreateProductMutation();
-
-  const [deleteProduct] = useDeleteProductMutation();
-
-  const [updateProductById, { isLoading: isUpdating }] =
-    useUpdateProductByIdMutation();
+  const [isAddCategoryOpen, setIsAddCategoryOpen] = useState(false);
+  const [categories, setCategories] = useState(mockCategories);
+  const [selectedCategory, setSelectedCategory] = useState(null);
+  const [isEditMode, setIsEditMode] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleTabClick = (tab) => {
     setActiveTab(tab);
   };
 
-  const handleAddProduct = async (productData) => {
+  // TODO: I am going to create a backend API for categories.
+  const handleAddCategory = async (categoryData) => {
+    setIsLoading(true);
     try {
-      const result = await createProduct(productData).unwrap();
-      toast.success("Product created successfully");
-      console.log("Created success", result);
+      // Simulate API call
+      await new Promise((resolve) => setTimeout(resolve, 1000));
 
-      refetch();
+      const newCategory = {
+        id: categories.length + 1,
+        ...categoryData,
+        productCount: 0,
+        status: "Active",
+        createdAt: new Date().toISOString().split("T")[0],
+      };
+
+      setCategories((prev) => [newCategory, ...prev]);
+      toast.success("Category added successfully");
+      setIsAddCategoryOpen(false);
     } catch (error) {
-      console.error("Failed to create product", error);
-      toast.error("Failed to create product");
+      toast.error("Failed to add category");
+    } finally {
+      setIsLoading(false);
     }
   };
 
-  const handleEditProduct = (product) => {
-    console.log("Product ID:", product._id);
-    console.log("Product ID type:", typeof product._id);
-
-    setSelectedProduct(product);
-
-    setIsEditProductOpen(true);
+  const handleEditCategory = (category) => {
+    setSelectedCategory(category);
+    setIsEditMode(true);
+    setIsAddCategoryOpen(true);
   };
 
-  const handleUpdateProduct = async (id, updatedData) => {
-    console.log("handle update function: ", id);
-    console.log("handle update function: ", typeof id);
-
-    if (!id || typeof id !== "string") {
-      toast.error("Invalid product id");
-      return;
-    }
-
+  const handleUpdateCategory = async (categoryData) => {
+    setIsLoading(true);
     try {
-      await updateProductById({ id, data: updatedData }).unwrap();
-      toast.success("Product updated successfully");
-      refetch();
+      // Simulate API call
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+
+      setCategories((prev) =>
+        prev.map((cat) =>
+          cat.id === selectedCategory.id ? { ...cat, ...categoryData } : cat
+        )
+      );
+
+      toast.success("Category updated successfully");
+      setIsAddCategoryOpen(false);
+      setSelectedCategory(null);
+      setIsEditMode(false);
     } catch (error) {
-      console.error("Update failed", error);
-      toast.error("Failed to update product", error);
+      toast.error("Failed to update category");
+    } finally {
+      setIsLoading(false);
     }
   };
 
-  const handleDeleteProduct = async (productId) => {
-    if (!productId) {
-      toast.error("Invalid product ID");
-      return;
-    }
-    try {
-      await deleteProduct(productId).unwrap();
-      toast.success("Product delete successfully");
-      refetch();
-    } catch (error) {
-      console.log("Error", error);
-      toast.error("Failed to delete product ---->>", error);
+  const handleDeleteCategory = async (categoryId) => {
+    if (window.confirm("Are you sure you want to delete this category?")) {
+      try {
+        // Simulate API call
+        await new Promise((resolve) => setTimeout(resolve, 500));
+
+        setCategories((prev) => prev.filter((cat) => cat.id !== categoryId));
+        toast.success("Category deleted successfully");
+      } catch (error) {
+        toast.error("Failed to delete category");
+      }
     }
   };
 
   const columns = useMemo(
     () => [
       {
-        header: "Product Name",
+        header: "Category",
         accessorKey: "name",
         cell: ({ row }) => (
           <div className="flex items-center gap-3">
             <img
-              src={row.original.images[0]}
+              src={row.original.image}
               alt={row.original.name}
               className="w-10 h-10 object-cover rounded"
             />
@@ -120,90 +160,58 @@ const ProductManagement = () => {
                 {row.original.name}
               </div>
               <div className="text-sm text-gray-500 dark:text-gray-400">
-                {row.original.brand}
+                {row.original.description}
               </div>
             </div>
           </div>
         ),
       },
       {
-        header: "Price",
-        accessorKey: "price",
+        header: "Products",
+        accessorKey: "productCount",
         cell: ({ row }) => (
-          <div>
-            <div className="font-medium text-gray-800 dark:text-gray-200">
-              ₹{row.original.price.toLocaleString()}
-            </div>
-            {row.original.originalPrice > row.original.price && (
-              <div className="text-sm text-gray-500 dark:text-gray-400 line-through">
-                ₹{row.original.originalPrice.toLocaleString()}
-              </div>
-            )}
-          </div>
+          <span className="font-medium text-gray-800 dark:text-gray-200">
+            {row.original.productCount}
+          </span>
         ),
       },
       {
-        header: "Rating",
-        accessorKey: "rating",
-        cell: ({ row }) => (
-          <div className="flex items-center gap-1">
-            <span className="text-yellow-500">★</span>
-            <span className="text-gray-800 dark:text-gray-200">
-              {row.original.rating}
-            </span>
-            <span className="text-gray-500 dark:text-gray-400">
-              ({row.original.reviewCount})
-            </span>
-          </div>
-        ),
-      },
-      {
-        header: "Stock",
-        accessorKey: "stock",
+        header: "Status",
+        accessorKey: "status",
         cell: ({ row }) => (
           <span
-            className={
-              row.original.countInStock === 0
-                ? "text-red-600 font-medium"
-                : "text-gray-800 dark:text-gray-200"
-            }
+            className={`px-2 py-1 text-xs rounded-full ${
+              row.original.status === "Active"
+                ? "bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200"
+                : "bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-200"
+            }`}
           >
-            {row.original.countInStock}
+            {row.original.status}
           </span>
         ),
       },
       {
-        header: "Category",
-        accessorKey: "category",
+        header: "Created Date",
+        accessorKey: "createdAt",
         cell: ({ row }) => (
-          <span className="px-2 py-1 bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200 text-xs rounded-full">
-            {row.original.category}
+          <span className="text-gray-600 dark:text-gray-400">
+            {row.original.createdAt}
           </span>
         ),
-      },
-      {
-        header: "Badge",
-        accessorKey: "badge",
-        cell: ({ row }) =>
-          row.original.badge ? (
-            <span className="px-2 py-1 bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 text-xs rounded-full">
-              {row.original.badge}
-            </span>
-          ) : null,
       },
       {
         header: "Actions",
         cell: ({ row }) => (
           <div className="flex gap-3">
             <button
-              onClick={() => handleEditProduct(row.original)}
+              onClick={() => handleEditCategory(row.original)}
               className="text-blue-600 dark:text-blue-400 cursor-pointer flex items-center gap-1 hover:underline"
             >
               <Edit size={16} />
               Edit
             </button>
             <button
-              onClick={() => handleDeleteProduct(row.original._id)}
+              onClick={() => handleDeleteCategory(row.original.id)}
               className="text-red-600 dark:text-red-400 cursor-pointer flex items-center gap-1 hover:underline"
             >
               <Trash size={16} />
@@ -216,10 +224,8 @@ const ProductManagement = () => {
     []
   );
 
-  const products = productsData?.products || productsData || [];
-
   const table = useReactTable({
-    data: products,
+    data: categories,
     columns,
     state: {
       globalFilter,
@@ -231,61 +237,36 @@ const ProductManagement = () => {
     manualPagination: false,
   });
 
-  if (isLoading) {
-    return (
-      <div className="flex min-h-screen bg-gray-50 dark:bg-gray-900">
-        <AdminSidePanel activeTab={activeTab} handleTabClick={handleTabClick} />
-        <main className="flex-1 p-8 bg-gray-50 dark:bg-gray-900">
-          <LoadingSpinner size="xl" text="Loading Products..." type="bars" />
-        </main>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="flex min-h-screen bg-gray-50 dark:bg-gray-900">
-        <AdminSidePanel activeTab={activeTab} handleTabClick={handleTabClick} />
-        <main className="flex-1 p-8 bg-gray-50 dark:bg-gray-900">
-          <div className="alert alert-error">
-            <div>
-              Error loading products: {error.data?.message || error.message}
-            </div>
-            <button onClick={refetch} className="btn btn-sm btn-outline">
-              Retry
-            </button>
-          </div>
-        </main>
-      </div>
-    );
-  }
-
   return (
     <div className="flex min-h-screen bg-gray-50 dark:bg-gray-900 font-display">
       <AdminSidePanel activeTab={activeTab} handleTabClick={handleTabClick} />
       <main className="flex-1 p-8 bg-gray-50 dark:bg-gray-900">
         <div className="flex items-center justify-between mb-6">
           <h1 className="text-2xl font-bold text-gray-800 dark:text-white">
-            Products
+            Categories List
           </h1>
           <button
-            className="btn btn-primary"
-            onClick={() => setIsAddProductOpen(true)}
-            disabled={isCreating}
+            className="btn btn-primary flex items-center gap-2"
+            onClick={() => {
+              setSelectedCategory(null);
+              setIsEditMode(false);
+              setIsAddCategoryOpen(true);
+            }}
           >
-            {isCreating ? "Adding..." : "Add New Product"}
+            <Plus size={20} />
+            Add New Category
           </button>
         </div>
 
         <input
           type="text"
-          placeholder="Search Product"
+          placeholder="Search categories..."
           value={globalFilter ?? ""}
           onChange={(e) => setGlobalFilter(e.target.value)}
           className="input input-bordered w-full mb-4 bg-white dark:bg-gray-800 text-gray-800 dark:text-white"
         />
 
-        {/* Table of Product List */}
+        {/* Table of Categories List */}
         <div className="overflow-x-auto rounded-lg shadow border border-gray-200 dark:border-gray-700">
           <table className="table w-full bg-white dark:bg-gray-800">
             <thead className="bg-gray-100 dark:bg-gray-700">
@@ -328,14 +309,14 @@ const ProductManagement = () => {
           </table>
         </div>
 
-        {products.length === 0 && (
+        {categories.length === 0 && (
           <div className="text-center py-12 text-gray-500 dark:text-gray-400 bg-white dark:bg-gray-800 rounded-lg">
-            <p className="text-lg mb-2">No products found</p>
-            <p className="text-sm">Add your first product to get started!</p>
+            <p className="text-lg mb-2">No categories found</p>
+            <p className="text-sm">Add your first category to get started!</p>
           </div>
         )}
 
-        {products.length > 0 && (
+        {categories.length > 0 && (
           <div className="flex items-center justify-between border-t border-gray-200 dark:border-gray-700 pt-4">
             <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
               <span>Page</span>
@@ -430,24 +411,22 @@ const ProductManagement = () => {
           </div>
         )}
 
-        <AddProduct
-          isOpen={isAddProductOpen}
-          onClose={() => setIsAddProductOpen(false)}
-          onAddProduct={handleAddProduct}
-          isLoading={isCreating}
-        />
-
-        <AddProduct
-          isOpen={isEditProductOpen}
-          onClose={() => setIsEditProductOpen(false)}
-          onEditProduct={handleUpdateProduct}
-          existingProduct={selectedProduct}
-          isEditMode={true}
-          isLoading={isUpdating}
+        <AddCategories
+          isOpen={isAddCategoryOpen}
+          onClose={() => {
+            setIsAddCategoryOpen(false);
+            setSelectedCategory(null);
+            setIsEditMode(false);
+          }}
+          onAddCategory={handleAddCategory}
+          onUpdateCategory={handleUpdateCategory}
+          existingCategory={selectedCategory}
+          isEditMode={isEditMode}
+          isLoading={isLoading}
         />
       </main>
     </div>
   );
 };
 
-export default ProductManagement;
+export default Categories;
