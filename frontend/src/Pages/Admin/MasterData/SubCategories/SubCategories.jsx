@@ -1,9 +1,9 @@
-// OrderManagement.jsx
 import React, { useState } from "react";
-import AdminSidePanel from "../../component/AdminSidePanel";
+import AdminSidePanel from "../../../../component/AdminSidePanel";
 
-const OrderManagement = () => {
-  const [activeTab, setActiveTab] = useState("orders");
+// TODO: in future I am going to create sub categories after completing the categories.
+const SubCategories = () => {
+  const [activeTab, setActiveTab] = useState("subCategories");
   const handleTabClick = (tab) => {
     setActiveTab(tab);
   };
@@ -12,11 +12,11 @@ const OrderManagement = () => {
       <AdminSidePanel activeTab={activeTab} handleTabClick={handleTabClick} />
       <main className="flex-1 p-8 bg-gray-50 dark:bg-gray-900">
         <h1 className="text-2xl font-bold text-gray-800 dark:text-white">
-          Order Management
+          Sub Categories List
         </h1>
       </main>
     </div>
   );
 };
 
-export default OrderManagement;
+export default SubCategories;

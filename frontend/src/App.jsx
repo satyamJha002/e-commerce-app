@@ -29,6 +29,8 @@ import ProductManagement from "./Pages/Admin/ProductManagement.jsx";
 import OrderManagement from "./Pages/Admin/OrderManagement.jsx";
 import CustomerManagement from "./Pages/Admin/CustomerManagement.jsx";
 import Setting from "./Pages/Admin/Setting.jsx";
+import Categories from "./Pages/Admin/MasterData/Catgories/Categories.jsx";
+import SubCategories from "./Pages/Admin/MasterData/SubCategories/SubCategories.jsx";
 
 const App = () => {
   const location = useLocation();
@@ -95,6 +97,8 @@ const App = () => {
             path="/admin-customer-management"
             element={<CustomerManagement />}
           />
+          <Route path="/admin-categories" element={<Categories />} />
+          <Route path="/admin-sub-categories" element={<SubCategories />} />
           <Route path="/admin-setting" element={<Setting />} />
         </Route>
         <Route path="*" element={<NotFound />} />
