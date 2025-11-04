@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from "react";
 import ModalComponent from "../../../component/ModalComponent";
 import { LucideX } from "lucide-react";
+import { useGetCategoriesQuery } from "../../../slices/categoryApiSlice";
 
 const AddProduct = ({
   isOpen,
@@ -28,6 +29,11 @@ const AddProduct = ({
   });
 
   const [productImages, setProductImages] = useState([]);
+
+  const { data: categoriesData, isLoading: isLoadingCategories } =
+    useGetCategoriesQuery();
+
+  const categories = categoriesData?.categories || [];
 
   useEffect(() => {
     if (isOpen) {
@@ -345,11 +351,17 @@ const AddProduct = ({
               disabled={isLoading}
             >
               <option value="">Select Category</option>
-              <option value="Electronics">Electronics</option>
-              <option value="Fashion">Fashion</option>
-              <option value="Home & Kitchen">Home & Kitchen</option>
-              <option value="Sports">Sport</option>
+              {categories.map((category) => (
+                <option value={category._id} key={category._id}>
+                  {category.categoryName}
+                </option>
+              ))}
             </select>
+            {isLoadingCategories && (
+              <span className="text-xs text-gray-500 mt-1">
+                Loading categories...
+              </span>
+            )}
           </div>
         </div>
 

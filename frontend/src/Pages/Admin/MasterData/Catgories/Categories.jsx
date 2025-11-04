@@ -1,5 +1,5 @@
 // Categories.jsx
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import AdminSidePanel from "../../../../component/AdminSidePanel";
 import { toast } from "react-toastify";
 import { ChevronsLeft, ChevronsRight, Edit, Trash, Plus } from "lucide-react";
@@ -12,91 +12,102 @@ import {
 } from "@tanstack/react-table";
 import AddCategories from "./AddCategories";
 import LoadingSpinner from "../../../../component/Loader/LoadingSpinner";
-
-// Mock data - replace with actual API calls
-const mockCategories = [
-  {
-    id: 1,
-    name: "Electronics",
-    description: "Electronic devices and accessories",
-    image: "https://via.placeholder.com/50",
-    productCount: 150,
-    status: "Active",
-    createdAt: "2024-01-15",
-  },
-  {
-    id: 2,
-    name: "Clothing",
-    description: "Men's and women's clothing",
-    image: "https://via.placeholder.com/50",
-    productCount: 89,
-    status: "Active",
-    createdAt: "2024-01-10",
-  },
-  {
-    id: 3,
-    name: "Home & Garden",
-    description: "Home decor and garden supplies",
-    image: "https://via.placeholder.com/50",
-    productCount: 67,
-    status: "Active",
-    createdAt: "2024-01-05",
-  },
-  {
-    id: 4,
-    name: "Sports",
-    description: "Sports equipment and accessories",
-    image: "https://via.placeholder.com/50",
-    productCount: 42,
-    status: "Inactive",
-    createdAt: "2024-01-01",
-  },
-  {
-    id: 5,
-    name: "Books",
-    description: "Fiction and non-fiction books",
-    image: "https://via.placeholder.com/50",
-    productCount: 234,
-    status: "Active",
-    createdAt: "2023-12-28",
-  },
-];
+import {
+  useCreateCategoryMutation,
+  useGetCategoriesQuery,
+  useDeleteCategoryMutation,
+  useUpdateCategoryMutation,
+} from "../../../../slices/categoryApiSlice";
+import {
+  setCategories,
+  setError,
+  setLoading,
+  clearError,
+} from "../../../../slices/categorySlice";
+import { useDispatch, useSelector } from "react-redux";
 
 const Categories = () => {
+  const dispatch = useDispatch();
+  const { categories, loading, error } = useSelector(
+    (state) => state.categories
+  );
+
   const [activeTab, setActiveTab] = useState("categories");
   const [globalFilter, setGlobalFilter] = useState("");
   const [isAddCategoryOpen, setIsAddCategoryOpen] = useState(false);
-  const [categories, setCategories] = useState(mockCategories);
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [isEditMode, setIsEditMode] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
+
+  // RTK Query hooks
+  const {
+    data: categoriesData,
+    isLoading: isLoadingCategories,
+    error: categoriesError,
+    refetch,
+  } = useGetCategoriesQuery();
+
+  const [createCategory, { isLoading: isCreating }] =
+    useCreateCategoryMutation();
+  const [deleteCategory, { isLoading: isDeleting }] =
+    useDeleteCategoryMutation();
+  const [updateCategory, { isLoading: isUpdating }] =
+    useUpdateCategoryMutation();
+
+  // Transform API data to match table structure
+  useEffect(() => {
+    if (categoriesData) {
+      const transformedCategories = categoriesData?.categories.map(
+        (category) => ({
+          id: category._id,
+          name: category.categoryName,
+          description: category.categoryDescp,
+          image: category.categoryImage || "https://via.placeholder.com/50",
+          productCount: category.productCount || 0,
+          status: category.status || "Active",
+          createdAt: category.createdAt
+            ? new Date(category.createdAt).toISOString().split("T")[0]
+            : new Date().toISOString().split("T")[0],
+          // Keep original data for reference
+          originalData: category,
+        })
+      );
+      dispatch(setCategories(transformedCategories));
+    }
+  }, [categoriesData, dispatch]);
+
+  useEffect(() => {
+    if (categoriesError) {
+      dispatch(
+        setError(categoriesError?.data?.message || "Failed to fetch categories")
+      );
+    }
+  }, [categoriesError, dispatch]);
 
   const handleTabClick = (tab) => {
     setActiveTab(tab);
   };
 
-  // TODO: I am going to create a backend API for categories.
   const handleAddCategory = async (categoryData) => {
-    setIsLoading(true);
+    dispatch(setLoading(true));
     try {
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+      const formData = new FormData();
 
-      const newCategory = {
-        id: categories.length + 1,
-        ...categoryData,
-        productCount: 0,
-        status: "Active",
-        createdAt: new Date().toISOString().split("T")[0],
-      };
+      formData.append("categoryName", categoryData.name);
+      formData.append("categoryDescp", categoryData.description);
 
-      setCategories((prev) => [newCategory, ...prev]);
-      toast.success("Category added successfully");
+      if (categoryData.image && typeof categoryData.image !== "string") {
+        formData.append("categoryImage", categoryData.image);
+      }
+
+      const res = await createCategory(formData).unwrap();
+      toast.success(res.message || "Category created successfully");
       setIsAddCategoryOpen(false);
+      refetch();
     } catch (error) {
-      toast.error("Failed to add category");
+      toast.error(error?.data?.message || "Failed to add category");
+      dispatch(setError(error?.data?.message || "Failed to add category"));
     } finally {
-      setIsLoading(false);
+      dispatch(setLoading(false));
     }
   };
 
@@ -107,38 +118,46 @@ const Categories = () => {
   };
 
   const handleUpdateCategory = async (categoryData) => {
-    setIsLoading(true);
+    dispatch(setLoading(true));
     try {
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+      if (!selectedCategory?.id) {
+        throw new Error("No category selected for update");
+      }
 
-      setCategories((prev) =>
-        prev.map((cat) =>
-          cat.id === selectedCategory.id ? { ...cat, ...categoryData } : cat
-        )
-      );
+      // Create FormData for file upload
+      const formData = new FormData();
+      formData.append("id", selectedCategory.id);
+      formData.append("categoryName", categoryData.name);
+      formData.append("categoryDescp", categoryData.description);
 
-      toast.success("Category updated successfully");
+      // Append file if it's a new file (not a string URL)
+      if (categoryData.image && typeof categoryData.image !== "string") {
+        formData.append("categoryImage", categoryData.image);
+      }
+
+      const res = await updateCategory(formData).unwrap();
+      toast.success(res.message || "Category updated successfully");
       setIsAddCategoryOpen(false);
       setSelectedCategory(null);
       setIsEditMode(false);
+      refetch();
     } catch (error) {
-      toast.error("Failed to update category");
+      toast.error(error?.data?.message || "Failed to update category");
+      dispatch(setError(error?.data?.message || "Failed to update category"));
     } finally {
-      setIsLoading(false);
+      dispatch(setLoading(false));
     }
   };
 
   const handleDeleteCategory = async (categoryId) => {
     if (window.confirm("Are you sure you want to delete this category?")) {
       try {
-        // Simulate API call
-        await new Promise((resolve) => setTimeout(resolve, 500));
-
-        setCategories((prev) => prev.filter((cat) => cat.id !== categoryId));
+        await deleteCategory(categoryId).unwrap();
         toast.success("Category deleted successfully");
+        refetch();
       } catch (error) {
-        toast.error("Failed to delete category");
+        toast.error(error?.data?.message || "Failed to delete category");
+        dispatch(setError(error?.data?.message || "Failed to delete category"));
       }
     }
   };
@@ -150,11 +169,14 @@ const Categories = () => {
         accessorKey: "name",
         cell: ({ row }) => (
           <div className="flex items-center gap-3">
-            <img
+            {/* <img
               src={row.original.image}
               alt={row.original.name}
               className="w-10 h-10 object-cover rounded"
-            />
+              onError={(e) => {
+                e.target.src = "https://via.placeholder.com/50";
+              }}
+            /> */}
             <div>
               <div className="font-medium text-gray-800 dark:text-gray-200">
                 {row.original.name}
@@ -206,6 +228,7 @@ const Categories = () => {
             <button
               onClick={() => handleEditCategory(row.original)}
               className="text-blue-600 dark:text-blue-400 cursor-pointer flex items-center gap-1 hover:underline"
+              disabled={isDeleting}
             >
               <Edit size={16} />
               Edit
@@ -213,6 +236,7 @@ const Categories = () => {
             <button
               onClick={() => handleDeleteCategory(row.original.id)}
               className="text-red-600 dark:text-red-400 cursor-pointer flex items-center gap-1 hover:underline"
+              disabled={isDeleting}
             >
               <Trash size={16} />
               Delete
@@ -221,11 +245,11 @@ const Categories = () => {
         ),
       },
     ],
-    []
+    [isDeleting]
   );
 
   const table = useReactTable({
-    data: categories,
+    data: categories || [],
     columns,
     state: {
       globalFilter,
@@ -237,10 +261,33 @@ const Categories = () => {
     manualPagination: false,
   });
 
+  if (isLoadingCategories) {
+    return (
+      <div className="flex min-h-screen bg-gray-50 dark:bg-gray-900">
+        <AdminSidePanel activeTab={activeTab} handleTabClick={handleTabClick} />
+        <main className="flex-1 p-8 flex items-center justify-center">
+          <LoadingSpinner />
+        </main>
+      </div>
+    );
+  }
+
   return (
     <div className="flex min-h-screen bg-gray-50 dark:bg-gray-900 font-display">
       <AdminSidePanel activeTab={activeTab} handleTabClick={handleTabClick} />
       <main className="flex-1 p-8 bg-gray-50 dark:bg-gray-900">
+        {error && (
+          <div className="mb-4 p-4 bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-200 rounded-lg">
+            {error}
+            <button
+              onClick={() => dispatch(clearError())}
+              className="float-right font-bold"
+            >
+              ×
+            </button>
+          </div>
+        )}
+
         <div className="flex items-center justify-between mb-6">
           <h1 className="text-2xl font-bold text-gray-800 dark:text-white">
             Categories List
@@ -309,15 +356,16 @@ const Categories = () => {
           </table>
         </div>
 
-        {categories.length === 0 && (
+        {categories?.length === 0 && (
           <div className="text-center py-12 text-gray-500 dark:text-gray-400 bg-white dark:bg-gray-800 rounded-lg">
             <p className="text-lg mb-2">No categories found</p>
             <p className="text-sm">Add your first category to get started!</p>
           </div>
         )}
 
-        {categories.length > 0 && (
+        {categories?.length > 0 && (
           <div className="flex items-center justify-between border-t border-gray-200 dark:border-gray-700 pt-4">
+            {/* Pagination controls remain the same */}
             <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
               <span>Page</span>
               <strong className="text-gray-800 dark:text-white">
@@ -327,7 +375,6 @@ const Categories = () => {
             </div>
 
             <div className="flex items-center gap-2">
-              {/* First Page */}
               <button
                 className="btn btn-sm btn-ghost text-gray-800 dark:text-white"
                 onClick={() => table.setPageIndex(0)}
@@ -336,7 +383,6 @@ const Categories = () => {
                 <ChevronsLeft size={16} />
               </button>
 
-              {/* Previous Page */}
               <button
                 className="btn btn-sm btn-ghost text-gray-800 dark:text-white"
                 onClick={() => table.previousPage()}
@@ -345,7 +391,6 @@ const Categories = () => {
                 <ChevronsLeft size={16} />
               </button>
 
-              {/* Page Numbers */}
               <div className="flex items-center gap-1 mx-2">
                 {Array.from(
                   { length: Math.min(5, table.getPageCount()) },
@@ -368,7 +413,6 @@ const Categories = () => {
                 )}
               </div>
 
-              {/* Next Page */}
               <button
                 className="btn btn-sm btn-ghost text-gray-800 dark:text-white"
                 onClick={() => table.nextPage()}
@@ -377,7 +421,6 @@ const Categories = () => {
                 <ChevronsRight size={16} />
               </button>
 
-              {/* Last Page */}
               <button
                 className="btn btn-sm btn-ghost text-gray-800 dark:text-white"
                 onClick={() => table.setPageIndex(table.getPageCount() - 1)}
@@ -417,12 +460,13 @@ const Categories = () => {
             setIsAddCategoryOpen(false);
             setSelectedCategory(null);
             setIsEditMode(false);
+            dispatch(clearError());
           }}
           onAddCategory={handleAddCategory}
           onUpdateCategory={handleUpdateCategory}
           existingCategory={selectedCategory}
           isEditMode={isEditMode}
-          isLoading={isLoading}
+          isLoading={loading || isCreating || isUpdating}
         />
       </main>
     </div>

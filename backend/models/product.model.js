@@ -26,7 +26,11 @@ const productSchema = new mongoose.Schema(
     images: { type: [String], required: true },
     brand: { type: String, required: true },
     badge: { type: String },
-    category: { type: String, required: true },
+    category: {
+      type: mongoose.Schema.Types.ObjectId,
+      required: true,
+      ref: "Categories",
+    },
     rating: { type: Number, required: true, default: 0 },
     reviews: [reviewSchema],
     numReviews: { type: Number, required: true, default: 0 },
