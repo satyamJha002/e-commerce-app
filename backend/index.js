@@ -3,6 +3,7 @@ import dotenv from "dotenv";
 import connectDb from "./config/db.js";
 import { notFound, errorHandler } from "./middleware/errorHandler.js";
 import productRoute from "./routes/product.route.js";
+import categoryRoute from "./routes/categories.route.js";
 import authRoute from "./routes/auth.route.js";
 import userDetailRoute from "./routes/userDetails.route.js";
 import cookieParser from "cookie-parser";
@@ -33,6 +34,7 @@ app.get("/", (req, res) => {
 });
 
 app.use("/api/product", productRoute);
+app.use("/api/category", categoryRoute);
 app.use("/api/auth", authRoute);
 app.use("/api/profile", userDetailRoute);
 app.use(notFound);

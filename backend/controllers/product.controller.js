@@ -4,6 +4,7 @@ import {
   uploadMultipleToCloudinary,
   deleteFromCloudinary,
 } from "../utils/cloudinary.js";
+import mongoose from "mongoose";
 
 const creatProducts = asyncHandler(async (req, res) => {
   const user = req.user;
@@ -71,6 +72,9 @@ const creatProducts = asyncHandler(async (req, res) => {
     throw new Error("At least one product image is required");
   }
 
+  const transformedCategory = mongoose.Types.ObjectId.isValid(category)
+    ? category
+    : null;
   const transformedKeyFeatures = Array.isArray(keyFeatures)
     ? keyFeatures
     : typeof keyFeatures === "string"
@@ -106,7 +110,7 @@ const creatProducts = asyncHandler(async (req, res) => {
     images: imageUrls,
     brand: brand.trim(),
     badge: (badge || "").trim(),
-    category: category.trim(),
+    category: transformedCategory,
     rating: 0,
     reviews: [],
     numReviews: 0,
@@ -140,7 +144,11 @@ const getProducts = asyncHandler(async (req, res) => {
   const filter = {};
 
   if (category) {
-    filter.category = { $regex: category, $options: "i" };
+    if (mongoose.Types.ObjectId.isValid(category)) {
+      filter.category = category;
+    } else {
+      filter.category = { $regex: category, $options: "i" };
+    }
   }
 
   if (brand) {
@@ -195,6 +203,7 @@ const getProducts = asyncHandler(async (req, res) => {
 
     const products = await Product.find(filter)
       .populate("user", "name email")
+      .populate("category", "categoryName")
       .sort(sortOptions)
       .skip(skip)
       .limit(limitNum)
@@ -239,6 +248,7 @@ const getProductById = asyncHandler(async (req, res) => {
   try {
     const product = await Product.findById(id)
       .populate("user", "name email")
+      .populate("category", "categoryName")
       .populate("reviews.user", "name email");
 
     if (!product) {
@@ -338,7 +348,11 @@ const updateProductById = asyncHandler(async (req, res) => {
 
     if (name) updateFields.name = name.trim();
     if (brand) updateFields.brand = brand.trim();
-    if (category) updateFields.category = category.trim();
+    if (category) {
+      updateFields.category = mongoose.Types.ObjectId.isValid(category)
+        ? category
+        : null;
+    }
     if (price) updateFields.price = Number(price);
     if (originalPrice) updateFields.originalPrice = Number(originalPrice);
     if (discount !== undefined && discount !== "")

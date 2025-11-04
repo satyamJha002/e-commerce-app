@@ -40,9 +40,9 @@ const AddCategories = ({
     }
 
     const categoryData = {
-      name: categoryName,
-      description: categoryDescription,
-      image: selectedFile || "https://via.placeholder.com/50",
+      name: categoryName.trim(),
+      description: categoryDescription.trim(),
+      image: selectedFile, // This will be either a File object or string URL
     };
 
     if (isEditMode) {
