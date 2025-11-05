@@ -1,4 +1,5 @@
 import express from "express";
+import helmet from "helmet";
 import dotenv from "dotenv";
 import connectDb from "./config/db.js";
 import { notFound, errorHandler } from "./middleware/errorHandler.js";
@@ -14,6 +15,7 @@ connectDb();
 
 const port = process.env.PORT || 5000;
 const app = express();
+app.use(helmet());
 
 const corsOptions = {
   origin: ["http://localhost:5173", "http://localhost:3000"],
