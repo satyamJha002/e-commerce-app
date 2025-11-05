@@ -249,7 +249,7 @@ const deleteCategory = asyncHandler(async (req, res) => {
     }
   }
 
-  await Categories.findByIdAndDelete(id);
+  await Categories.findByIdAndDelete({ $eq: id });
 
   res.status(200).json({
     success: true,
@@ -282,7 +282,7 @@ const updateCategory = asyncHandler(async (req, res) => {
   if (categoryName && categoryName !== category.categoryName) {
     // Use collation to do case-insensitive exact match without building regex from user input
     const existingCategory = await Categories.findOne({
-      categoryName: categoryName,
+      categoryName: { $eq: categoryName },
       _id: { $ne: id },
     }).collation({ locale: "en", strength: 2 });
 
@@ -348,7 +348,7 @@ const updateCategory = asyncHandler(async (req, res) => {
   const productCount = await Product.countDocuments({ category: id });
   updateFields.productCount = productCount;
 
-  const updatedCategory = await Categories.findByIdAndUpdate(id, updateFields, {
+  const updatedCategory = await Categories.findByIdAndUpdate({ $eq: id }, updateFields, {
     new: true,
     runValidators: true,
   }).populate("user", "name email");
