@@ -291,7 +291,7 @@ const deleteProductById = asyncHandler(async (req, res) => {
     }
   }
 
-  await Product.findByIdAndDelete(req.params.id);
+  await Product.findByIdAndDelete({ $eq: req.params.id });
 
   res.json({ success: true, message: "Product deleted successfully" });
 });
@@ -413,7 +413,7 @@ const updateProductById = asyncHandler(async (req, res) => {
     }
 
     const updatedProduct = await Product.findByIdAndUpdate(
-      id,
+      { $eq: id },
       { $set: updateFields },
       { new: true, runValidators: true }
     );
