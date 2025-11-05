@@ -13,7 +13,7 @@ const register = asyncHandler(async (req, res) => {
     throw new Error("Please fill out the required field");
   }
 
-  const authExist = await Auth.findOne({ $or: [{ email }, { username }] });
+  const authExist = await Auth.findOne({ $or: [{ email: { $eq: email } }, { username: { $eq: username } }] });
 
   if (authExist) {
     res.status(400);
