@@ -1,4 +1,3 @@
-// Categories.jsx
 import React, { useEffect, useMemo, useState } from "react";
 import AdminSidePanel from "../../../../component/AdminSidePanel";
 import { toast } from "react-toastify";
@@ -228,7 +227,7 @@ const Categories = () => {
             <button
               onClick={() => handleEditCategory(row.original)}
               className="text-blue-600 dark:text-blue-400 cursor-pointer flex items-center gap-1 hover:underline"
-              disabled={isDeleting}
+              disabled={isEditMode}
             >
               <Edit size={16} />
               Edit
