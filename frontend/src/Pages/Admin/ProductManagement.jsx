@@ -177,7 +177,7 @@ const ProductManagement = () => {
         accessorKey: "category",
         cell: ({ row }) => (
           <span className="px-2 py-1 bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200 text-xs rounded-full">
-            {row.original.category}
+            {row.original.category?.categoryName || "N/A"}
           </span>
         ),
       },
