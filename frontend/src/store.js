@@ -3,6 +3,7 @@ import { apiSlice } from "./slices/apiSlice.js";
 import authReducer from "./slices/authSlice.js";
 import productReducer from "./slices/productsSlice.js";
 import categoryReducer from "./slices/categorySlice.js";
+import subCategoryReducer from "./slices/subCategorySlice.js";
 
 const store = configureStore({
   reducer: {
@@ -10,6 +11,7 @@ const store = configureStore({
     auth: authReducer,
     products: productReducer,
     categories: categoryReducer,
+    subCategories: subCategoryReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware().concat(apiSlice.middleware),

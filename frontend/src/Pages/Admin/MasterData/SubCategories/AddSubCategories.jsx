@@ -1,14 +1,22 @@
 import React, { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { toast } from "react-toastify";
+import {
+  useCreateSubCategoryMutation,
+  useUpdateSubCategoryMutation,
+} from "../../../../slices/subCategoryApiSlice";
+import { clearSelectedSubCategory } from "../../../../slices/subCategorySlice";
+import { useGetCategoriesQuery } from "../../../../slices/categoryApiSlice";
 
 const AddSubCategories = ({
   isOpen,
   onClose,
-  categories,
   existingSubCategory,
   isEditMode = false,
-  isLoading = false,
-  handleSave,
+  refetch,
 }) => {
+  const dispatch = useDispatch();
+
   const [formData, setFormData] = useState({
     name: "",
     description: "",
@@ -20,12 +28,29 @@ const AddSubCategories = ({
     categoryId: "",
   });
 
+  const { data: categoriesData, isLoading: isLoadingCategories } =
+    useGetCategoriesQuery();
+
+  const [updateSubCategory, { isLoading: isUpdating }] =
+    useUpdateSubCategoryMutation();
+
+  const categories = categoriesData?.categories || [];
+
+  // RTK Query mutations
+  const [createSubCategory, { isLoading: isCreating }] =
+    useCreateSubCategoryMutation();
+
+  const isLoading = isCreating;
+
   useEffect(() => {
     if (isEditMode && existingSubCategory) {
       setFormData({
-        name: existingSubCategory.name,
-        description: existingSubCategory.description,
-        categoryId: existingSubCategory.categoryId,
+        name: existingSubCategory.name || "",
+        description: existingSubCategory.description || "",
+        categoryId:
+          existingSubCategory.categoryId?._id ||
+          existingSubCategory.categoryId ||
+          "",
       });
     } else {
       setFormData({
@@ -42,7 +67,8 @@ const AddSubCategories = ({
     let isValid = true;
 
     if (!formData.name.trim()) {
-      (newErrors.name = "Sub-category name is required"), (isValid = false);
+      newErrors.name = "Sub-category name is required";
+      isValid = false;
     }
 
     if (!formData.categoryId) {
@@ -54,9 +80,43 @@ const AddSubCategories = ({
     return isValid;
   };
 
+  const handleSave = async () => {
+    if (!validateForm()) return;
+
+    try {
+      if (isEditMode && existingSubCategory) {
+        const subCategoryId = existingSubCategory._id || existingSubCategory.id;
+
+        if (!subCategoryId) {
+          toast.error("Sub-category ID is missing");
+          return;
+        }
+
+        await updateSubCategory({
+          id: subCategoryId,
+          ...formData,
+        }).unwrap();
+        toast.success("Sub-category updated successfully");
+      } else {
+        await createSubCategory(formData).unwrap();
+        toast.success("Sub-category created successfully");
+      }
+
+      if (refetch) {
+        refetch();
+      }
+
+      handleClose();
+    } catch (error) {
+      console.error("Error saving sub-category:", error);
+      toast.error(error?.data?.message || "Something went wrong");
+    }
+  };
+
   const handleClose = () => {
     setFormData({ name: "", description: "", categoryId: "" });
     setErrors({ name: "", categoryId: "" });
+    dispatch(clearSelectedSubCategory());
     onClose();
   };
 
@@ -93,7 +153,7 @@ const AddSubCategories = ({
             )}
           </div>
 
-          <div className="spac-y-2">
+          <div className="space-y-2">
             <label className="block text-gray-800 dark:text-gray-200 font-medium mb-2">
               Parent Category *
             </label>
@@ -103,17 +163,38 @@ const AddSubCategories = ({
               onChange={(e) =>
                 setFormData({ ...formData, categoryId: e.target.value })
               }
-              className="w-full border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 rounded-lg px-4 py-3 text-gray-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 rounded-lg px-4 py-3 text-gray-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer"
+              style={{
+                backgroundImage: `url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e")`,
+                backgroundPosition: "right 0.75rem center",
+                backgroundRepeat: "no-repeat",
+                backgroundSize: "1rem 1rem",
+                paddingRight: "2.5rem",
+                WebkitAppearance: "none",
+                MozAppearance: "none",
+                appearance: "none",
+              }}
             >
-              <option value="">Select a parent category</option>
+              <option
+                value=""
+                className="bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
+              >
+                Select a parent category
+              </option>
               {categories.map((category) => (
-                <option key={category.id} value={category.id}>
-                  {category.name}
+                <option
+                  key={category._id || category.id}
+                  value={category._id || category.id}
+                  className="bg-white dark:bg-gray-800 text-gray-900 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 py-2"
+                >
+                  {category.categoryName}
                 </option>
               ))}
             </select>
             {errors.categoryId && (
-              <p className="text-sm text-destructive">{errors.categoryId}</p>
+              <p className="text-sm text-red-600 dark:text-red-400 mt-1">
+                {errors.categoryId}
+              </p>
             )}
           </div>
 
@@ -137,6 +218,7 @@ const AddSubCategories = ({
           <button
             className="px-5 py-2 bg-gray-200 dark:bg-gray-600 text-gray-800 dark:text-white rounded-lg hover:bg-gray-300 dark:hover:bg-gray-500 disabled:opacity-50 disabled:cursor-not-allowed"
             onClick={handleClose}
+            disabled={isLoading}
           >
             Cancel
           </button>
@@ -151,9 +233,9 @@ const AddSubCategories = ({
                 {isEditMode ? "Updating..." : "Saving..."}
               </>
             ) : isEditMode ? (
-              "Update Category"
+              "Update Sub Category"
             ) : (
-              "Save Category"
+              "Save Sub Category"
             )}
           </button>
         </div>
