@@ -31,6 +31,11 @@ const productSchema = new mongoose.Schema(
       required: true,
       ref: "Categories",
     },
+    subCategory: {
+      type: mongoose.Schema.Types.ObjectId,
+      required: true,
+      ref: "SubCategory",
+    },
     rating: { type: Number, required: true, default: 0 },
     reviews: [reviewSchema],
     numReviews: { type: Number, required: true, default: 0 },

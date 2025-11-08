@@ -1,5 +1,4 @@
 import SubCategory from "../models/subCategories.model.js";
-await SubCategory.findByIdAndDelete(id);
 import asyncHandler from "../middleware/asyncHandler.js";
 
 const createSubCategory = asyncHandler(async (req, res) => {

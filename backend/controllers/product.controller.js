@@ -21,6 +21,7 @@ const creatProducts = asyncHandler(async (req, res) => {
     price,
     brand,
     category,
+    subCategory,
     countInStock,
     originalPrice,
     discount,
@@ -34,6 +35,7 @@ const creatProducts = asyncHandler(async (req, res) => {
     price,
     brand,
     category,
+    subCategory,
     countInStock,
   };
 
@@ -75,6 +77,11 @@ const creatProducts = asyncHandler(async (req, res) => {
   const transformedCategory = mongoose.Types.ObjectId.isValid(category)
     ? category
     : null;
+
+  const transformedSubCategory = mongoose.Types.ObjectId.isValid(subCategory)
+    ? subCategory
+    : null;
+
   const transformedKeyFeatures = Array.isArray(keyFeatures)
     ? keyFeatures
     : typeof keyFeatures === "string"
@@ -111,6 +118,7 @@ const creatProducts = asyncHandler(async (req, res) => {
     brand: brand.trim(),
     badge: (badge || "").trim(),
     category: transformedCategory,
+    subCategory: transformedSubCategory,
     rating: 0,
     reviews: [],
     numReviews: 0,
@@ -129,6 +137,7 @@ const creatProducts = asyncHandler(async (req, res) => {
 const getProducts = asyncHandler(async (req, res) => {
   const {
     category,
+    subCategory,
     brand,
     minPrice,
     maxPrice,
@@ -148,6 +157,14 @@ const getProducts = asyncHandler(async (req, res) => {
       filter.category = category;
     } else {
       filter.category = { $regex: category, $options: "i" };
+    }
+  }
+
+  if (subCategory) {
+    if (mongoose.Types.ObjectId.isValid(subCategory)) {
+      filter.subCategory = subCategory;
+    } else {
+      filter.subCategory = { $regex: subCategory, $options: "i" };
     }
   }
 
@@ -315,6 +332,7 @@ const updateProductById = asyncHandler(async (req, res) => {
     brand,
     badge,
     category,
+    subCategory,
     rating,
     countInStock,
   } = req.body;
@@ -351,6 +369,11 @@ const updateProductById = asyncHandler(async (req, res) => {
     if (category) {
       updateFields.category = mongoose.Types.ObjectId.isValid(category)
         ? category
+        : null;
+    }
+    if (subCategory) {
+      updateFields.subCategory = mongoose.Types.ObjectId.isValid(subCategory)
+        ? subCategory
         : null;
     }
     if (price) updateFields.price = Number(price);
