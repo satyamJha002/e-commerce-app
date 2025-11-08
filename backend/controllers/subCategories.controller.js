@@ -1,4 +1,5 @@
 import SubCategory from "../models/subCategories.model.js";
+await SubCategory.findByIdAndDelete(id);
 import asyncHandler from "../middleware/asyncHandler.js";
 
 const createSubCategory = asyncHandler(async (req, res) => {
@@ -23,7 +24,7 @@ const createSubCategory = asyncHandler(async (req, res) => {
 
   if (subCategoryExist) {
     res.status(400);
-    throw new Error("This Sub-category already exist");
+    throw new Error("This Sub-category already exists");
   }
 
   const subCategory = await SubCategory.create({
@@ -36,7 +37,7 @@ const createSubCategory = asyncHandler(async (req, res) => {
 
   await subCategory.populate("categoryId", "name");
 
-  res.status(201).json({
+  res.status(200).json({
     success: true,
     message: "SubCategory created successfully",
     data: subCategory,
@@ -71,10 +72,23 @@ const getAllSubCategory = asyncHandler(async (req, res) => {
   // Parse pagination
   const pageNum = parseInt(page);
   const limitNum = parseInt(limit);
+
+  if (isNaN(pageNum) || pageNum < 1) {
+    res.status(400);
+    throw new Error("Invalid page number");
+  }
+
+  if (isNaN(limitNum) || limitNum < 1 || limitNum > 100) {
+    res.status(400);
+    throw new Error("Invalid limit value");
+  }
   const skip = (pageNum - 1) * limitNum;
 
+  const allowedSortFields = ["createdAt", "name", "status", "updatedAt"];
+  const validSortBy = allowedSortFields.includes(sortBy) ? sortBy : "createdAt";
+
   const sort = {};
-  sort[sortBy] = sortOrder === "desc" ? -1 : 1;
+  sort[validSortBy] = sortOrder === "desc" ? -1 : 1;
 
   const [subCategories, totalCount] = await Promise.all([
     SubCategory.find(filter)
@@ -128,7 +142,7 @@ const updateSubCategory = asyncHandler(async (req, res) => {
 
     if (existingSubCategory) {
       res.status(400);
-      throw new Error("Sub-category already exists in this country");
+      throw new Error("Sub-category already exists in this category");
     }
   }
 
@@ -154,7 +168,7 @@ const deleteSubCategory = asyncHandler(async (req, res) => {
 
   if (!user) {
     res.status(401);
-    throw new Error("Unautorized to delete the sub category");
+    throw new Error("Unauthorized to delete the sub category");
   }
 
   const subCategory = await SubCategory.findById(id);
@@ -164,7 +178,7 @@ const deleteSubCategory = asyncHandler(async (req, res) => {
     throw new Error("Sub-category is not present");
   }
 
-  await SubCategory.findByIdAndDelete(req.params.id);
+  await SubCategory.findByIdAndDelete(id);
 
   res.status(200).json({
     success: true,
