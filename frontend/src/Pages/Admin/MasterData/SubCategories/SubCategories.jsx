@@ -27,12 +27,12 @@ const SubCategories = () => {
   const dispatch = useDispatch();
   const [globalFilter, setGlobalFilter] = useState("");
   const [isAddSubCategory, setIsAddSubCategory] = useState(false);
-  const [selectedSubCategory, setLocalSelectedSubCategory] = useState(null);
   const [isEditMode, setIsEditMode] = useState(false);
 
   // Redux state
-  const { filters, selectedSubCategory: reduxSelectedSubCategory } =
-    useSelector((state) => state.subCategories);
+  const { filters, selectedSubCategory } = useSelector(
+    (state) => state.subCategories
+  );
 
   // API calls
   const {
@@ -60,19 +60,14 @@ const SubCategories = () => {
   const categoryMap = useMemo(() => {
     const map = {};
     categories.forEach((category) => {
-      // Use the correct property name - check if it's 'name' or 'categoryName'
       map[category._id] = category.name || category.categoryName;
     });
-    console.log("Category Map:", map); // Debug: check what's in the map
     return map;
   }, [categories]);
 
   const columnHelper = createColumnHelper();
 
   const handleEdit = (subCategory) => {
-    console.log("Editing sub-category:", subCategory); // Debug log
-    console.log("Sub-category ID:", subCategory._id); // Debug log
-    setLocalSelectedSubCategory(subCategory);
     dispatch(setSelectedSubCategory(subCategory));
     setIsEditMode(true);
     setIsAddSubCategory(true);
@@ -93,7 +88,6 @@ const SubCategories = () => {
   };
 
   const handleAddNew = () => {
-    setLocalSelectedSubCategory(null);
     dispatch(clearSelectedSubCategory());
     setIsEditMode(false);
     setIsAddSubCategory(true);
@@ -101,7 +95,6 @@ const SubCategories = () => {
 
   const handleCloseModal = () => {
     setIsAddSubCategory(false);
-    setLocalSelectedSubCategory(null);
     dispatch(clearSelectedSubCategory());
     setIsEditMode(false);
   };
@@ -202,7 +195,7 @@ const SubCategories = () => {
         ),
       }),
     ],
-    [categoryMap] // ✅ ADD THIS - This is the key fix!
+    [categoryMap]
   );
 
   const table = useReactTable({
@@ -320,7 +313,7 @@ const SubCategories = () => {
         <AddSubCategories
           isOpen={isAddSubCategory}
           onClose={handleCloseModal}
-          existingSubCategory={selectedSubCategory || reduxSelectedSubCategory}
+          existingSubCategory={selectedSubCategory}
           isEditMode={isEditMode}
           refetch={refetch}
         />

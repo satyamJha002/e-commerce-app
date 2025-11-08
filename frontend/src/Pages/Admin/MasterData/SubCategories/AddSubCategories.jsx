@@ -28,8 +28,12 @@ const AddSubCategories = ({
     categoryId: "",
   });
 
-  const { data: categoriesData, isLoading: isLoadingCategories } =
-    useGetCategoriesQuery();
+  const {
+    data: categoriesData,
+    isLoading: isLoadingCategories,
+    isError,
+    error,
+  } = useGetCategoriesQuery();
 
   const [updateSubCategory, { isLoading: isUpdating }] =
     useUpdateSubCategoryMutation();
@@ -40,8 +44,7 @@ const AddSubCategories = ({
   const [createSubCategory, { isLoading: isCreating }] =
     useCreateSubCategoryMutation();
 
-  const isLoading = isCreating;
-
+  const isLoading = isCreating || isUpdating;
   useEffect(() => {
     if (isEditMode && existingSubCategory) {
       setFormData({
@@ -164,22 +167,17 @@ const AddSubCategories = ({
                 setFormData({ ...formData, categoryId: e.target.value })
               }
               className="w-full border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 rounded-lg px-4 py-3 text-gray-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer"
-              style={{
-                backgroundImage: `url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e")`,
-                backgroundPosition: "right 0.75rem center",
-                backgroundRepeat: "no-repeat",
-                backgroundSize: "1rem 1rem",
-                paddingRight: "2.5rem",
-                WebkitAppearance: "none",
-                MozAppearance: "none",
-                appearance: "none",
-              }}
+              disabled={isLoadingCategories}
             >
               <option
                 value=""
                 className="bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
               >
-                Select a parent category
+                {isLoadingCategories
+                  ? "Loading categories..."
+                  : isError
+                  ? "Failed to load categories"
+                  : "Select a parent category"}
               </option>
               {categories.map((category) => (
                 <option
