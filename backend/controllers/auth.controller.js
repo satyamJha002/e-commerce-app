@@ -2,6 +2,9 @@ import asyncHandler from "../middleware/asyncHandler.js";
 import Auth from "../models/auth.model.js";
 import { generateRefreshToken, generateToken } from "../utils/generateToken.js";
 import jwt from "jsonwebtoken";
+import { OAuth2Client } from "google-auth-library";
+
+const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
 const register = asyncHandler(async (req, res) => {
   const { email, password, username } = req.body;
@@ -203,4 +206,67 @@ const logout = asyncHandler(async (req, res) => {
 
   res.status(200).json({ message: "Logged out successfully" });
 });
-export { register, login, getMe, logout, refreshToken };
+
+const googleLogin = asyncHandler(async (req, res) => {
+  const { token: googleToken } = req.body;
+
+  const ticket = await client.verifyIdToken({
+    idToken: googleToken,
+    audience: process.env.GOOGLE_CLIENT_ID,
+  });
+
+  const { email, name, sub: googleId } = ticket.getPayload();
+
+  let auth = await Auth.findOne({
+    $or: [{ email }, { googleId }],
+  });
+
+  if (!auth) {
+    // Register new user
+    auth = await Auth.create({
+      username: name,
+      email,
+      googleId,
+      password: "", // Optional or handle as per schema
+      role: "user",
+      isAdmin: false,
+    });
+  } else if (!auth.googleId) {
+    // Link existing account
+    auth.googleId = googleId;
+    await auth.save();
+  }
+
+  const token = generateToken(auth._id);
+  const refreshToken = generateRefreshToken(auth._id);
+
+  auth.refreshToken = refreshToken;
+  await auth.save();
+
+  res.cookie("token", token, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "strict",
+    maxAge: 15 * 60 * 1000,
+    path: "/",
+  });
+
+  res.cookie("refreshToken", refreshToken, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "strict",
+    maxAge: 30 * 24 * 60 * 60 * 1000,
+    path: "/",
+  });
+
+  res.status(200).json({
+    _id: auth._id,
+    email: auth.email,
+    username: auth.username,
+    role: auth.role,
+    isAdmin: auth.isAdmin,
+    token,
+  });
+});
+
+export { register, login, getMe, logout, refreshToken, googleLogin };

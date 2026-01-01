@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { useLoginMutation } from "../slices/authApiSlice.js";
+import { useLoginMutation, useGoogleLoginMutation } from "../slices/authApiSlice.js";
 import { setCredentials } from "../slices/authSlice.js";
 import { toast } from "react-toastify";
+import { GoogleLogin } from "@react-oauth/google";
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -14,6 +15,19 @@ const Login = () => {
   const navigate = useNavigate();
 
   const [login, { isLoading }] = useLoginMutation();
+  const [googleLogin] = useGoogleLoginMutation();
+
+  const handleGoogleSuccess = async (credentialResponse) => {
+    try {
+      const res = await googleLogin({ token: credentialResponse.credential }).unwrap();
+      dispatch(setCredentials(res));
+      navigate("/");
+      toast.success("Logged in successfully");
+    } catch (err) {
+      console.log(err);
+      toast.error(err?.data?.message || "Google login failed");
+    }
+  };
 
   useEffect(() => {
     const savedEmail = localStorage.getItem("rememberEmail");
@@ -127,6 +141,22 @@ const Login = () => {
             >
               {isLoading ? "Sign In..." : "Login"}
             </button>
+
+            <div className="flex flex-col gap-2 mt-2">
+              <div className="relative flex items-center justify-center">
+                 <span className="bg-white dark:bg-gray-800 px-2 text-gray-500 text-sm">Or continue with</span>
+              </div>
+              <div className="flex justify-center">
+                <GoogleLogin
+                  onSuccess={handleGoogleSuccess}
+                  onError={() => {
+                    console.log('Login Failed');
+                    toast.error("Google Login Failed");
+                  }}
+                  useOneTap
+                />
+              </div>
+            </div>
             <p className="text-sm text-gray-600 dark:text-gray-300 text-center">
               Don’t have an account?{" "}
               <a

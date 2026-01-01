@@ -1,8 +1,10 @@
 import React, {useState} from "react";
-import {useRegisterMutation} from "../slices/authApiSlice.js";
+import {useRegisterMutation, useGoogleLoginMutation} from "../slices/authApiSlice.js";
 import {useDispatch} from "react-redux";
 import {useNavigate} from "react-router-dom";
 import {setCredentials} from "../slices/authSlice.js";
+import { GoogleLogin } from "@react-oauth/google";
+import { toast } from "react-toastify";
 
 const Register = () => {
     const [formData, setFormData] = useState({
@@ -15,8 +17,22 @@ const Register = () => {
     })
 
     const [register, {isLoading}] = useRegisterMutation()
+    const [googleLogin] = useGoogleLoginMutation();
+    
     const dispatch = useDispatch();
     const navigate = useNavigate();
+
+    const handleGoogleSuccess = async (credentialResponse) => {
+        try {
+            const res = await googleLogin({ token: credentialResponse.credential }).unwrap();
+            dispatch(setCredentials(res));
+            navigate("/");
+            toast.success("Registered successfully");
+        } catch (err) {
+            console.log(err);
+            toast.error(err?.data?.message || "Google registration failed");
+        }
+    };
 
     const handleChange = (e) => {
         const {name, value} = e.target;
@@ -116,6 +132,22 @@ const Register = () => {
                         >
                             {isLoading ? "Signing Up..." : "Sign Up"}
                         </button>
+
+                        <div className="flex flex-col gap-2 mt-2">
+                            <div className="relative flex items-center justify-center">
+                                <span className="bg-white dark:bg-gray-800 px-2 text-gray-500 text-sm">Or continue with</span>
+                            </div>
+                            <div className="flex justify-center">
+                                <GoogleLogin
+                                    onSuccess={handleGoogleSuccess}
+                                    onError={() => {
+                                        console.log('Register Failed');
+                                        toast.error("Google Register Failed");
+                                    }}
+                                    useOneTap
+                                />
+                            </div>
+                        </div>
 
                         {/* Sign in link */}
                         <p className="text-sm text-gray-600 dark:text-gray-300 text-center">
