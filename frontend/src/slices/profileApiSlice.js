@@ -18,8 +18,17 @@ export const profileApiSlice = apiSlice.injectEndpoints({
                 credentials: 'include',
             }),
             invalidatesTags: ['Profile']
+        }),
+        updateAvatar: builder.mutation({
+            query: (data) => ({
+                url: `${BASE_URL}/api/profile/upload-avatar`,
+                method: 'POST',
+                body: data,
+                credentials: 'include',
+            }),
+            invalidatesTags: ['Profile']
         })
     })
 })
 
-export const {useGetProfileQuery, useUpdateProfileDetailsMutation} = profileApiSlice
+export const {useGetProfileQuery, useUpdateProfileDetailsMutation, useUpdateAvatarMutation} = profileApiSlice
