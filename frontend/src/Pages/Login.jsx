@@ -1,7 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { useLoginMutation, useGoogleLoginMutation } from "../slices/authApiSlice.js";
+import {
+  useLoginMutation,
+  useGoogleLoginMutation,
+} from "../slices/authApiSlice.js";
 import { setCredentials } from "../slices/authSlice.js";
 import { toast } from "react-toastify";
 import { GoogleLogin } from "@react-oauth/google";
@@ -19,7 +22,9 @@ const Login = () => {
 
   const handleGoogleSuccess = async (credentialResponse) => {
     try {
-      const res = await googleLogin({ token: credentialResponse.credential }).unwrap();
+      const res = await googleLogin({
+        token: credentialResponse.credential,
+      }).unwrap();
       dispatch(setCredentials(res));
       navigate("/");
       toast.success("Logged in successfully");
@@ -144,13 +149,15 @@ const Login = () => {
 
             <div className="flex flex-col gap-2 mt-2">
               <div className="relative flex items-center justify-center">
-                 <span className="bg-white dark:bg-gray-800 px-2 text-gray-500 text-sm">Or continue with</span>
+                <span className="bg-white dark:bg-gray-800 px-2 text-gray-500 text-sm">
+                  Or continue with
+                </span>
               </div>
               <div className="flex justify-center">
                 <GoogleLogin
                   onSuccess={handleGoogleSuccess}
                   onError={() => {
-                    console.log('Login Failed');
+                    console.log("Login Failed");
                     toast.error("Google Login Failed");
                   }}
                   useOneTap

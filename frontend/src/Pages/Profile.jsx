@@ -13,12 +13,37 @@ import { useSelector } from "react-redux";
 import { useGetProfileQuery } from "../slices/profileApiSlice.js";
 import { useState } from "react";
 import Modal from "../component/Modal.jsx";
+import { useUpdateAvatarMutation } from "../slices/profileApiSlice.js";
+import { toast } from "react-toastify";
 
 const Profile = () => {
   const { userInfo } = useSelector((state) => state.auth);
   const { data: profileData, isLoading, error } = useGetProfileQuery();
 
   const [modalOpen, setModalOpen] = useState(false);
+  const [uploadAvatar, { isLoading: isUploading }] = useUpdateAvatarMutation();
+  const [orders, setOrders] = useState([]);
+
+  const handleAvatarUpload = async (e) => {
+    const file = e.target.files[0];
+
+    if (!file) {
+      toast.error("Please select an image");
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append("avatar", file);
+
+    try {
+      const response = await uploadAvatar(formData).unwrap();
+      console.log("Avatar response: ", response);
+
+      toast.success("Avatar updated successfully");
+    } catch (error) {
+      toast.error(error?.data?.message || "Failed to update avatar");
+    }
+  };
 
   if (isLoading) {
     return (
@@ -40,40 +65,7 @@ const Profile = () => {
     );
   }
 
-  // Placeholder orders data
-  const orders = [
-    {
-      id: "ORD001",
-      date: "2025-07-15",
-      total: 129.99,
-      status: "Delivered",
-      items: [
-        { name: "Shoes", quantity: 1, price: 79.99 },
-        { name: "Smartwatch", quantity: 1, price: 50.0 },
-      ],
-    },
-    {
-      id: "ORD002",
-      date: "2025-06-22",
-      total: 89.99,
-      status: "Processing",
-      items: [{ name: "Backpack", quantity: 1, price: 89.99 }],
-    },
-    {
-      id: "ORD003",
-      date: "2025-05-10",
-      total: 199.99,
-      status: "Delivered",
-      items: [{ name: "Headphones", quantity: 2, price: 99.995 }],
-    },
-    {
-      id: "ORD004",
-      date: "2025-04-18",
-      total: 299.99,
-      status: "Shipped",
-      items: [{ name: "Laptop Stand", quantity: 1, price: 299.99 }],
-    },
-  ];
+
 
   const user = {
     name: `${profileData?.profile?.firstName} ${profileData?.profile?.lastName}`,
@@ -113,41 +105,64 @@ const Profile = () => {
     <>
       <div className="min-h-screen bg-base-200">
         {/* Header with gradient background */}
-        <div className="bg-gradient-to-r from-primary to-secondary text-primary-content">
+        <div className="text-primary-content">
           <div className="container mx-auto px-4 py-16">
-            <div className="flex flex-col md:flex-row items-center gap-8">
+            <div className="flex flex-col md:flex-row items-center gap-8 pt-14 pb-5">
+              {/* Avatar */}
               <div className="avatar">
-                <div className="w-32 rounded-full ring ring-primary-content ring-offset-base-100 ring-offset-2">
+                <div className="w-32 rounded-full relative ring ring-primary-content ring-offset-base-100 ring-offset-2 group">
                   <img
-                    src={user.avatar || "/placeholder.svg"}
+                    src={
+                      profileData?.profile?.avatar ||
+                      user.avatar ||
+                      "/placeholder.svg"
+                    }
                     alt={user.name}
+                    className="object-cover"
                   />
+                  <label className="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 group-hover:opacity-100 cursor-pointer transition-opacity rounded-full">
+                    <input
+                      type="file"
+                      accept="image/*"
+                      className="hidden"
+                      onChange={handleAvatarUpload}
+                      disabled={isUploading}
+                    />
+                    {isUploading ? (
+                      <span className="loading loading-spinner loading-sm"></span>
+                    ) : (
+                      <span className="text-white text-xs font-semibold">
+                        Change
+                      </span>
+                    )}
+                  </label>
                 </div>
               </div>
-              <div className="text-center mt-12 md:text-left">
+
+              {/* Name + Email */}
+              <div className="text-center md:text-left">
                 <h1 className="text-4xl md:text-5xl font-bold mb-2">
                   {user.name}
                 </h1>
-                <p className="text-xl opacity-90 mb-4">
-                  Customer since {user.joinDate}
-                </p>
-                <div className="flex flex-wrap gap-4 justify-center md:justify-start">
-                  <div className="stat bg-primary-content/20 rounded-lg text-primary-content">
-                    <div className="stat-value text-2xl">
-                      {user.totalOrders}
-                    </div>
-                    <div className="stat-title text-primary-content/80">
-                      Total Orders
-                    </div>
-                  </div>
-                  <div className="stat bg-primary-content/20 rounded-lg text-primary-content">
-                    <div className="stat-value text-2xl">
-                      ${user.totalSpent.toFixed(2)}
-                    </div>
-                    <div className="stat-title text-primary-content/80">
-                      Total Spent
-                    </div>
-                  </div>
+                <p className="text-xl opacity-90">{user.email}</p>
+              </div>
+            </div>
+
+            {/* Stats on the far right */}
+            <div className="flex gap-4 self-center md:self-start">
+              <div className="stat bg-primary-content/20 rounded-lg text-primary-content flex justify-content-between items-center">
+                <div className="stat-value text-2xl">{user.totalOrders}</div>
+                <div className="stat-title text-2xl font-semibold  text-primary-content/50">
+                  Total Orders
+                </div>
+              </div>
+
+              <div className="stat bg-primary-content/20 rounded-lg text-primary-content flex justify-content-between items-center">
+                <div className="stat-value text-2xl">
+                  ${user.totalSpent.toFixed(2)}
+                </div>
+                <div className="stat-title text-2xl font-semibold text-primary-content/50">
+                  Total Spent
                 </div>
               </div>
             </div>
