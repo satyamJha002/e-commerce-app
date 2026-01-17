@@ -41,12 +41,20 @@ export const productApiSlice = apiSlice.injectEndpoints({
         body: data,
       }),
     }),
+    getProductsByFilter: builder.query({
+      query: (params) => ({
+        url: `${PRODUCTS_URL}/allproducts`,
+        params,
+      }),
+      keepUnusedDataFor: 5,
+    }),
   }),
 });
 
 export const {
   useGetAllProductsQuery,
   useGetProductsByCategoryQuery,
+  useGetProductsByFilterQuery,
   useCreateProductMutation,
   useDeleteProductMutation,
   useGetProductByIdQuery,

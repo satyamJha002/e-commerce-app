@@ -1,12 +1,8 @@
 import Order from "../models/order.model.js";
-import Razorpay from "razorpay";
-import crypto from "crypto";
+import Stripe from "stripe";
 
-// Initialize Razorpay
-const razorpay = new Razorpay({
-  key_id: process.env.RAZORPAY_KEY_ID,
-  key_secret: process.env.RAZORPAY_KEY_SECRET,
-});
+// Initialize Stripe
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 
 // @desc    Create new order
 // @route   POST /api/orders
@@ -49,19 +45,33 @@ export const createOrder = async (req, res) => {
 
     const createdOrder = await order.save();
 
-    // If payment method is Razorpay, create Razorpay order
-    if (paymentMethod === "Razorpay") {
-      const razorpayOrder = await razorpay.orders.create({
-        amount: Math.round(totalPrice * 100), // Amount in paise
-        currency: "INR",
-        receipt: createdOrder._id.toString(),
+    // If payment method is Stripe, create Stripe checkout session
+    if (paymentMethod === "Stripe") {
+      const session = await stripe.checkout.sessions.create({
+        payment_method_types: ["card"],
+        line_items: orderItems.map((item) => ({
+          price_data: {
+            currency: "inr",
+            product_data: {
+              name: item.name,
+              images: [item.image],
+            },
+            unit_amount: Math.round(item.price * 100), // Amount in paise
+          },
+          quantity: item.quantity,
+        })),
+        mode: "payment",
+        success_url: `${process.env.FRONTEND_URL}/order-success?orderId=${createdOrder._id}&session_id={CHECKOUT_SESSION_ID}`,
+        cancel_url: `${process.env.FRONTEND_URL}/checkout`,
+        metadata: {
+          orderId: createdOrder._id.toString(),
+        },
       });
 
       return res.status(201).json({
         order: createdOrder,
-        razorpayOrderId: razorpayOrder.id,
-        razorpayKeyId: process.env.RAZORPAY_KEY_ID,
-        amount: razorpayOrder.amount,
+        stripeSessionId: session.id,
+        stripeUrl: session.url,
       });
     }
 
@@ -73,27 +83,18 @@ export const createOrder = async (req, res) => {
   }
 };
 
-// @desc    Verify Razorpay payment
+// @desc    Verify Stripe payment
 // @route   POST /api/orders/verify-payment
 // @access  Private
 export const verifyPayment = async (req, res) => {
   try {
-    const {
-      razorpay_order_id,
-      razorpay_payment_id,
-      razorpay_signature,
-      orderId,
-    } = req.body;
+    const { sessionId, orderId } = req.body;
 
-    // Verify signature
-    const sign = razorpay_order_id + "|" + razorpay_payment_id;
-    const expectedSign = crypto
-      .createHmac("sha256", process.env.RAZORPAY_KEY_SECRET)
-      .update(sign.toString())
-      .digest("hex");
+    // Retrieve the session from Stripe
+    const session = await stripe.checkout.sessions.retrieve(sessionId);
 
-    if (razorpay_signature !== expectedSign) {
-      return res.status(400).json({ message: "Invalid payment signature" });
+    if (session.payment_status !== "paid") {
+      return res.status(400).json({ message: "Payment not completed" });
     }
 
     // Update order as paid
@@ -105,9 +106,10 @@ export const verifyPayment = async (req, res) => {
     order.isPaid = true;
     order.paidAt = Date.now();
     order.paymentResult = {
-      id: razorpay_payment_id,
-      status: "paid",
+      id: session.payment_intent,
+      status: session.payment_status,
       update_time: new Date().toISOString(),
+      email_address: session.customer_details?.email,
     };
 
     const updatedOrder = await order.save();

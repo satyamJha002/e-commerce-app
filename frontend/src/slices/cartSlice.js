@@ -14,7 +14,7 @@ const getCartFromStorage = (userId) => {
     : {
         cartItems: [],
         shippingAddress: {},
-        paymentMethod: "Razorpay",
+        paymentMethod: "Stripe",
         itemsPrice: 0,
         shippingPrice: 0,
         taxPrice: 0,
@@ -151,7 +151,7 @@ const cartSlice = createSlice({
       state.totalPrice = 0;
       state.currentUserId = null;
       state.shippingAddress = {};
-      state.paymentMethod = "Razorpay";
+      state.paymentMethod = "Stripe";
     },
 
     // Save shipping address
