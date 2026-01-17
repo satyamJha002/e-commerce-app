@@ -9,6 +9,7 @@ import subCategoryRoute from "./routes/subCategory.route.js";
 import authRoute from "./routes/auth.route.js";
 import userDetailRoute from "./routes/userDetails.route.js";
 import dashboardRoute from "./routes/dashboard.route.js";
+import orderRoute from "./routes/order.route.js";
 import cookieParser from "cookie-parser";
 import cors from "cors";
 
@@ -43,6 +44,7 @@ app.use("/api/category", categoryRoute);
 app.use("/api/auth", authRoute);
 app.use("/api/profile", userDetailRoute);
 app.use("/api/dashboard", dashboardRoute);
+app.use("/api/orders", orderRoute);
 app.use(notFound);
 app.use(errorHandler);
 

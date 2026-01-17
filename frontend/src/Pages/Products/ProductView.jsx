@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useParams, Link } from "react-router-dom";
+import { useNavigate } from 'react-router-dom';
 import { useGetProductByIdQuery } from "../../slices/productApiSlice.js";
 import {
   Heart,
@@ -11,12 +12,32 @@ import {
   RotateCcw,
   Check,
 } from "lucide-react";
+import { useDispatch } from 'react-redux';
+import { addToCart } from '../../slices/cartSlice.js';
+import { toast } from 'react-toastify';
 
 const ProductView = () => {
   const { id } = useParams();
   const { data, isLoading, error } = useGetProductByIdQuery(id);
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
   const [quantity, setQuantity] = useState(1);
+
+  const dispatch = useDispatch()
+  const navigate = useNavigate();
+
+  const handleAddToCart = () => {
+    dispatch(
+      addToCart({
+        _id: data.product._id,
+        name: data.product.name,
+        price: data.product.price,
+        image: data.product.images?.[0] || "/placeholder.svg",
+        quantity: quantity,
+      })
+    )
+    navigate("/cart");
+    toast.success("Product added to cart");
+  }
 
   // Loading skeleton
   if (isLoading) {
@@ -276,6 +297,7 @@ const ProductView = () => {
             {/* Action Buttons */}
             <div className="flex flex-col sm:flex-row gap-4">
               <button
+                onClick={handleAddToCart}
                 disabled={product.countInStock === 0}
                 className="flex-1 flex items-center justify-center gap-2 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 disabled:from-gray-400 disabled:to-gray-500 text-white font-semibold py-4 px-6 rounded-xl transition-all duration-300 transform hover:scale-105 hover:shadow-lg disabled:cursor-not-allowed disabled:hover:scale-100"
               >

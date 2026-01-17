@@ -4,11 +4,13 @@ import { useDispatch, useSelector } from "react-redux";
 import { useLogoutMutation } from "../slices/authApiSlice.js";
 import { useNavigate } from "react-router-dom";
 import { logout as logoutAction } from "../slices/authSlice.js";
+import { clearCartOnLogout } from "../slices/cartSlice.js";
 import { toast } from "react-toastify";
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const { userInfo } = useSelector((state) => state.auth);
+  const { cartItems } = useSelector((state) => state.cart);
   const [logoutApiCall] = useLogoutMutation();
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -17,10 +19,13 @@ const Header = () => {
     setIsMenuOpen(!isMenuOpen);
   };
 
+
   const handleLogout = async () => {
     try {
       // Clear local state immediately for better UX
       dispatch(logoutAction());
+      // Clear cart from Redux (but keep in localStorage for next login)
+      dispatch(clearCartOnLogout());
 
       // Make API call to logout
       await logoutApiCall().unwrap();
@@ -83,13 +88,19 @@ const Header = () => {
 
         {/* Navigation Links */}
         <div className="flex flex-col md:flex-row items-start md:items-center gap-4 p-4 md:p-0">
-          {/* Cart */}
           <a
             href="/cart"
-            className="btn btn-ghost flex items-center gap-2 w-full md:w-auto justify-start md:justify-center"
+            className="btn btn-ghost flex items-center gap-2 w-full md:w-auto justify-start md:justify-center relative"
             onClick={() => setIsMenuOpen(false)}
           >
-            <FaShoppingCart />
+            <div className="relative">
+              <FaShoppingCart />
+              {cartItems.length > 0 && (
+                <span className="absolute -top-5 -right-2 bg-red-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
+                  {cartItems.reduce((acc, item) => acc + item.quantity, 0)}
+                </span>
+              )}
+            </div>
             Cart
           </a>
 
