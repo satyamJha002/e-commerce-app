@@ -8,9 +8,13 @@ import {
   Calendar,
   DollarSign,
   Eye,
+  CheckCircle,
+  Truck,
+  Clock,
 } from "lucide-react";
 import { useSelector } from "react-redux";
 import { useGetProfileQuery } from "../slices/profileApiSlice.js";
+import { useGetMyOrdersQuery } from "../slices/orderApiSlice.js";
 import { useState } from "react";
 import Modal from "../component/Modal.jsx";
 import { useUpdateAvatarMutation } from "../slices/profileApiSlice.js";
@@ -22,7 +26,7 @@ const Profile = () => {
 
   const [modalOpen, setModalOpen] = useState(false);
   const [uploadAvatar, { isLoading: isUploading }] = useUpdateAvatarMutation();
-  const [orders, setOrders] = useState([]);
+  const { data: orders = [], isLoading: ordersLoading } = useGetMyOrdersQuery();
 
   const handleAvatarUpload = async (e) => {
     const file = e.target.files[0];
@@ -89,14 +93,16 @@ const Profile = () => {
       ) || 0,
   };
 
-  const getStatusBadge = (status) => {
-    const statusStyles = {
-      Delivered: "badge-success",
-      Processing: "badge-warning",
-      Shipped: "badge-info",
-      Cancelled: "badge-error",
-    };
-    return statusStyles[status] || "badge-neutral";
+  const getStatusBadge = (isPaid, isDelivered) => {
+    if (isDelivered) return "badge-success";
+    if (isPaid) return "badge-info";
+    return "badge-warning";
+  };
+
+  const getStatusText = (isPaid, isDelivered) => {
+    if (isDelivered) return "Delivered";
+    if (isPaid) return "Shipped";
+    return "Processing";
   };
 
   return (
@@ -157,7 +163,7 @@ const Profile = () => {
 
               <div className="stat bg-primary-content/20 rounded-lg text-primary-content flex justify-content-between items-center">
                 <div className="stat-value text-2xl">
-                  ${user.totalSpent.toFixed(2)}
+                  ₹{orders.reduce((sum, order) => sum + (order?.totalPrice || 0), 0).toLocaleString()}
                 </div>
                 <div className="stat-title text-2xl font-semibold text-primary-content/50">
                   Total Spent
@@ -255,40 +261,45 @@ const Profile = () => {
                           </tr>
                         </thead>
                         <tbody>
-                          {orders.map((order) => (
-                            <tr key={order.id} className="hover">
+                          {orders.slice(0, 5).map((order) => (
+                            <tr key={order._id} className="hover">
                               <td className="font-mono font-semibold">
-                                {order.id}
+                                #{order._id.slice(-8).toUpperCase()}
                               </td>
                               <td>
-                                {new Date(order.date).toLocaleDateString()}
+                                {new Date(order.createdAt).toLocaleDateString("en-IN", {
+                                  year: "numeric",
+                                  month: "short",
+                                  day: "numeric",
+                                })}
                               </td>
                               <td className="font-semibold">
-                                $
-                                {(order.total ?? order.totalPrice ?? 0).toFixed(
-                                  2
-                                )}
+                                ₹{order.totalPrice?.toLocaleString()}
                               </td>
                               <td>
                                 <div
                                   className={`badge ${getStatusBadge(
-                                    order.status
+                                    order.isPaid,
+                                    order.isDelivered
                                   )} badge-lg`}
                                 >
-                                  {order.status}
+                                  {getStatusText(order.isPaid, order.isDelivered)}
                                 </div>
                               </td>
                               <td>
                                 <div className="text-sm">
-                                  {order.items.map((item, index) => (
-                                    <div key={index} className="opacity-70">
+                                  {order.orderItems?.slice(0, 2).map((item, index) => (
+                                    <div key={index} className="opacity-70 truncate max-w-[150px]">
                                       {item.name} (x{item.quantity})
                                     </div>
                                   ))}
+                                  {order.orderItems?.length > 2 && (
+                                    <div className="opacity-50 text-xs">+{order.orderItems.length - 2} more</div>
+                                  )}
                                 </div>
                               </td>
                               <td>
-                                <Link to={`/orders/${order.id}`}>
+                                <Link to="/orders-summary">
                                   <button className="btn btn-ghost btn-sm">
                                     <Eye className="w-4 h-4" />
                                     View
@@ -299,6 +310,15 @@ const Profile = () => {
                           ))}
                         </tbody>
                       </table>
+                      {orders.length > 5 && (
+                        <div className="text-center mt-4">
+                          <Link to="/orders-summary">
+                            <button className="btn btn-outline btn-sm">
+                              View All Orders ({orders.length})
+                            </button>
+                          </Link>
+                        </div>
+                      )}
                     </div>
                   ) : (
                     <div className="text-center py-12">
@@ -309,7 +329,7 @@ const Profile = () => {
                       <p className="text-sm text-base-content/50 mb-6">
                         Start shopping to see your orders here
                       </p>
-                      <Link to="/shop">
+                      <Link to="/all-products">
                         <button className="btn btn-primary">
                           Start Shopping
                         </button>

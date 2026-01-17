@@ -18,6 +18,7 @@ import SmartWatches from "./Pages/Products/SmartWatches/SmartWatches.jsx";
 import ProductView from "./Pages/Products/ProductView.jsx";
 import Orders from "./Pages/Orders.jsx";
 import CheckOut from "./Pages/CheckOut.jsx";
+import OrderSuccess from "./Pages/OrderSuccess.jsx";
 import ProtectedRoute from "./component/ProtectedRoute.jsx";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -67,6 +68,7 @@ const App = () => {
           <Route path="/orders-summary" element={<Orders />} />
           <Route path="/all-products" element={<Products />} />
           <Route path="/product/:id" element={<ProductView />} />
+          <Route path="/order-success" element={<OrderSuccess />} />
         </Route>
 
         {/* Categories Routes*/}

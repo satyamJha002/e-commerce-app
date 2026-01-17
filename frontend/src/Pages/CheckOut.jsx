@@ -30,8 +30,6 @@ const CheckOut = () => {
 
   const [createOrder, { isLoading: isCreatingOrder }] =
     useCreateOrderMutation();
-  const [verifyPayment, { isLoading: isVerifying }] =
-    useVerifyPaymentMutation();
 
   // Form state
   const [address, setAddress] = useState(cart.shippingAddress?.address || "");
@@ -44,7 +42,7 @@ const CheckOut = () => {
   );
   const [phone, setPhone] = useState(cart.shippingAddress?.phone || "");
   const [paymentMethod, setPaymentMethod] = useState(
-    cart.paymentMethod || "Razorpay"
+    cart.paymentMethod || "Stripe"
   );
 
   // Current step
@@ -56,17 +54,6 @@ const CheckOut = () => {
       navigate("/cart");
     }
   }, [cart.cartItems, navigate]);
-
-  // Load Razorpay script
-  useEffect(() => {
-    const script = document.createElement("script");
-    script.src = "https://checkout.razorpay.com/v1/checkout.js";
-    script.async = true;
-    document.body.appendChild(script);
-    return () => {
-      document.body.removeChild(script);
-    };
-  }, []);
 
   const handleShippingSubmit = (e) => {
     e.preventDefault();
@@ -82,44 +69,6 @@ const CheckOut = () => {
     e.preventDefault();
     dispatch(savePaymentMethod(paymentMethod));
     setCurrentStep(3);
-  };
-
-  const handleRazorpayPayment = async (orderData) => {
-    const options = {
-      key: orderData.razorpayKeyId,
-      amount: orderData.amount,
-      currency: "INR",
-      name: "EliteMart",
-      description: "Order Payment",
-      order_id: orderData.razorpayOrderId,
-      handler: async function (response) {
-        try {
-          await verifyPayment({
-            razorpay_order_id: response.razorpay_order_id,
-            razorpay_payment_id: response.razorpay_payment_id,
-            razorpay_signature: response.razorpay_signature,
-            orderId: orderData.order._id,
-          }).unwrap();
-
-          dispatch(clearCart());
-          toast.success("Payment successful! Order placed.");
-          navigate(`/orders-summary`);
-        } catch (err) {
-          toast.error(err?.data?.message || "Payment verification failed");
-        }
-      },
-      prefill: {
-        name: `${userInfo?.firstName || ""} ${userInfo?.lastName || ""}`,
-        email: userInfo?.email || "",
-        contact: phone,
-      },
-      theme: {
-        color: "#6366f1",
-      },
-    };
-
-    const razorpay = new window.Razorpay(options);
-    razorpay.open();
   };
 
   const placeOrderHandler = async () => {
@@ -140,8 +89,13 @@ const CheckOut = () => {
         totalPrice: cart.totalPrice,
       }).unwrap();
 
-      if (paymentMethod === "Razorpay") {
-        handleRazorpayPayment(orderData);
+      if (paymentMethod === "Stripe") {
+        // Redirect to Stripe Checkout
+        if (orderData.stripeUrl) {
+          window.location.href = orderData.stripeUrl;
+        } else {
+          toast.error("Failed to create payment session");
+        }
       } else {
         // COD - Order placed directly
         dispatch(clearCart());
@@ -300,32 +254,34 @@ const CheckOut = () => {
                 <form onSubmit={handlePaymentSubmit} className="space-y-4">
                   <div
                     className={`p-4 border-2 rounded-xl cursor-pointer transition-all ${
-                      paymentMethod === "Razorpay"
+                      paymentMethod === "Stripe"
                         ? "border-indigo-600 bg-indigo-50 dark:bg-indigo-900/20"
                         : "border-gray-200 dark:border-gray-700 hover:border-gray-300"
                     }`}
-                    onClick={() => setPaymentMethod("Razorpay")}
+                    onClick={() => setPaymentMethod("Stripe")}
                   >
                     <div className="flex items-center gap-4">
                       <input
                         type="radio"
                         name="paymentMethod"
-                        checked={paymentMethod === "Razorpay"}
-                        onChange={() => setPaymentMethod("Razorpay")}
+                        checked={paymentMethod === "Stripe"}
+                        onChange={() => setPaymentMethod("Stripe")}
                         className="w-5 h-5 text-indigo-600"
                       />
                       <div className="flex items-center gap-3">
-                        <img
-                          src="https://razorpay.com/assets/razorpay-glyph.svg"
-                          alt="Razorpay"
-                          className="w-8 h-8"
-                        />
+                        <div className="flex gap-1">
+                          <img
+                            src="https://upload.wikimedia.org/wikipedia/commons/b/ba/Stripe_Logo%2C_revised_2016.svg"
+                            alt="Stripe"
+                            className="h-6"
+                          />
+                        </div>
                         <div>
                           <p className="font-semibold text-gray-900 dark:text-white">
-                            Razorpay
+                            Credit/Debit Card
                           </p>
                           <p className="text-sm text-gray-500 dark:text-gray-400">
-                            UPI, Cards, Net Banking, Wallets
+                            Pay securely with Stripe
                           </p>
                         </div>
                       </div>
@@ -428,8 +384,8 @@ const CheckOut = () => {
                     </button>
                   </div>
                   <p className="text-gray-600 dark:text-gray-400 text-sm">
-                    {paymentMethod === "Razorpay"
-                      ? "Razorpay (UPI, Cards, Net Banking)"
+                    {paymentMethod === "Stripe"
+                      ? "Credit/Debit Card (Stripe)"
                       : "Cash on Delivery"}
                   </p>
                 </div>
@@ -472,14 +428,14 @@ const CheckOut = () => {
                   <button
                     type="button"
                     onClick={placeOrderHandler}
-                    disabled={isCreatingOrder || isVerifying}
+                    disabled={isCreatingOrder}
                     className="flex-1 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 disabled:from-gray-400 disabled:to-gray-500 text-white font-semibold py-3 px-6 rounded-xl transition-all duration-300 transform hover:scale-[1.02] disabled:cursor-not-allowed"
                   >
-                    {isCreatingOrder || isVerifying
+                    {isCreatingOrder
                       ? "Processing..."
                       : paymentMethod === "COD"
                       ? "Place Order"
-                      : "Pay Now"}
+                      : "Proceed to Payment"}
                   </button>
                 </div>
               </div>
