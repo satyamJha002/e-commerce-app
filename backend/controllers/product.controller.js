@@ -453,10 +453,70 @@ const updateProductById = asyncHandler(async (req, res) => {
   }
 });
 
+// Get products grouped by category for homepage display
+const getProductsByCategory = asyncHandler(async (req, res) => {
+  const { limit = 4 } = req.query;
+  const limitNum = Math.max(1, Math.min(parseInt(limit), 10));
+
+  try {
+    // Import Categories model
+    const Categories = (await import("../models/categories.model.js")).default;
+
+    // Fetch all active categories
+    const categories = await Categories.find({ status: "Active" }).sort({
+      categoryName: 1,
+    });
+
+    if (!categories || categories.length === 0) {
+      return res.status(200).json({
+        success: true,
+        message: "No categories found",
+        categories: [],
+      });
+    }
+
+    // Fetch products for each category
+    const categoriesWithProducts = await Promise.all(
+      categories.map(async (category) => {
+        const products = await Product.find({ category: category._id })
+          .populate("category", "categoryName")
+          .sort({ createdAt: -1 })
+          .limit(limitNum)
+          .select("-reviews");
+
+        return {
+          categoryId: category._id,
+          categoryName: category.categoryName,
+          categoryImage: category.categoryImage,
+          productCount: products.length,
+          products: products,
+        };
+      })
+    );
+
+    // Filter out categories with no products
+    const filteredCategories = categoriesWithProducts.filter(
+      (cat) => cat.products.length > 0
+    );
+
+    return res.status(200).json({
+      success: true,
+      message: "Products by category retrieved successfully",
+      categories: filteredCategories,
+      totalCategories: filteredCategories.length,
+    });
+  } catch (error) {
+    console.error("Error fetching products by category:", error);
+    res.status(500);
+    throw new Error("Server error while fetching products by category");
+  }
+});
+
 export {
   creatProducts,
   getProducts,
   getProductById,
   deleteProductById,
   updateProductById,
+  getProductsByCategory,
 };

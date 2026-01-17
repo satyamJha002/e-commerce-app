@@ -65,8 +65,6 @@ const Profile = () => {
     );
   }
 
-
-
   const user = {
     name: `${profileData?.profile?.firstName} ${profileData?.profile?.lastName}`,
     email: userInfo?.email,

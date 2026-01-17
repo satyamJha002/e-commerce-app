@@ -144,14 +144,14 @@ const SubCategories = () => {
           );
         },
       }),
-      columnHelper.accessor("description", {
+      /* columnHelper.accessor("description", {
         header: "Description",
         cell: (info) => (
           <div className="text-sm text-muted-foreground max-w-xs truncate">
             {info.getValue() || "No description"}
           </div>
         ),
-      }),
+      }), */
       columnHelper.accessor("status", {
         header: "Status",
         cell: (info) => (

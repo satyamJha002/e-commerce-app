@@ -5,6 +5,7 @@ import {
   getProductById,
   deleteProductById,
   updateProductById,
+  getProductsByCategory,
 } from "../controllers/product.controller.js";
 import { protectAuthMiddleware, admin } from "../middleware/authMiddleware.js";
 import { uploadMultiple } from "../middleware/uploadMiddleware.js";
@@ -33,5 +34,6 @@ router.patch(
   uploadMultiple("images"),
   updateProductById
 );
+router.get("/products-by-category", getProductsByCategory);
 
 export default router;
