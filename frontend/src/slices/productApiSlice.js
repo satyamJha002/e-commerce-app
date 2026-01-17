@@ -9,6 +9,13 @@ export const productApiSlice = apiSlice.injectEndpoints({
       }),
       keepUnusedDataFor: 5,
     }),
+    getProductsByCategory: builder.query({
+      query: (limit = 4) => ({
+        url: `${PRODUCTS_URL}/products-by-category`,
+        params: { limit },
+      }),
+      keepUnusedDataFor: 5,
+    }),
     createProduct: builder.mutation({
       query: (data) => ({
         url: `${PRODUCTS_URL}/create`,
@@ -39,6 +46,7 @@ export const productApiSlice = apiSlice.injectEndpoints({
 
 export const {
   useGetAllProductsQuery,
+  useGetProductsByCategoryQuery,
   useCreateProductMutation,
   useDeleteProductMutation,
   useGetProductByIdQuery,

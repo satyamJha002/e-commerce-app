@@ -1,149 +1,360 @@
-import React from 'react'
+import React, { useState } from "react";
+import { useParams, Link } from "react-router-dom";
+import { useGetProductByIdQuery } from "../../slices/productApiSlice.js";
+import {
+  Heart,
+  ShoppingCart,
+  ArrowLeft,
+  Star,
+  Truck,
+  Shield,
+  RotateCcw,
+  Check,
+} from "lucide-react";
 
 const ProductView = () => {
+  const { id } = useParams();
+  const { data, isLoading, error } = useGetProductByIdQuery(id);
+  const [selectedImageIndex, setSelectedImageIndex] = useState(0);
+  const [quantity, setQuantity] = useState(1);
+
+  // Loading skeleton
+  if (isLoading) {
     return (
-        <div className={'mt-18'}>
-            <div>
-                <div className="grid items-start grid-cols-1 lg:grid-cols-3">
-                    <div className="col-span-2 grid grid-cols-2 lg:sticky top-0 gap-0.5">
-                        <div className="columns-2 gap-0.5 space-y-0.5">
-                            <div className="overflow-hidden">
-                                <img src="https://readymadeui.com/images/product6.webp" alt="Product"
-                                     className="w-full aspect-[253/337] object-cover object-top shadow-md hover:scale-[1.05] transition-all duration-300"/>
-                            </div>
-                            <div className="overflow-hidden">
-                                <img src="https://readymadeui.com/images/product3.webp" alt="Product"
-                                     className="w-full aspect-[253/337] object-cover object-top shadow-md hover:scale-[1.05] transition-all duration-300"/>
-                            </div>
-                            <div className="overflow-hidden">
-                                <img src="https://readymadeui.com/images/product5.webp" alt="Product"
-                                     className="w-full aspect-[253/337] object-cover object-top shadow-md hover:scale-[1.05] transition-all duration-300"/>
-                            </div>
-                            <div className="overflow-hidden">
-                                <img src="https://readymadeui.com/images/product2.webp" alt="Product"
-                                     className="w-full aspect-[253/337] object-cover object-top shadow-md hover:scale-[1.05] transition-all duration-300"/>
-                            </div>
-                        </div>
-                        <div className="overflow-hidden">
-                            <img src="https://readymadeui.com/images/product6.webp" alt="Product"
-                                 className="w-full aspect-[3/4] object-cover object-top shadow-md hover:scale-[1.05] transition-all duration-300"/>
-                        </div>
-                    </div>
-
-                    <div className="py-6 px-8 max-lg:max-w-2xl">
-                        <div>
-                            <h2 className="text-xl font-semibold ">Adjective Attire | T-shirt</h2>
-                            <p className="text-sm text-slate-500 mt-2">Well-Versed Commerce</p>
-                        </div>
-
-                        <div className="flex items-center space-x-1 mt-6">
-                            <svg className="w-4 h-4 fill-yellow-400" viewBox="0 0 14 13" fill="none"
-                                 xmlns="http://www.w3.org/2000/svg">
-                                <path
-                                    d="M7 0L9.4687 3.60213L13.6574 4.83688L10.9944 8.29787L11.1145 12.6631L7 11.2L2.8855 12.6631L3.00556 8.29787L0.342604 4.83688L4.5313 3.60213L7 0Z"/>
-                            </svg>
-                            <svg className="w-4 h-4 fill-yellow-400" viewBox="0 0 14 13" fill="none"
-                                 xmlns="http://www.w3.org/2000/svg">
-                                <path
-                                    d="M7 0L9.4687 3.60213L13.6574 4.83688L10.9944 8.29787L11.1145 12.6631L7 11.2L2.8855 12.6631L3.00556 8.29787L0.342604 4.83688L4.5313 3.60213L7 0Z"/>
-                            </svg>
-                            <svg className="w-4 h-4 fill-yellow-400" viewBox="0 0 14 13" fill="none"
-                                 xmlns="http://www.w3.org/2000/svg">
-                                <path
-                                    d="M7 0L9.4687 3.60213L13.6574 4.83688L10.9944 8.29787L11.1145 12.6631L7 11.2L2.8855 12.6631L3.00556 8.29787L0.342604 4.83688L4.5313 3.60213L7 0Z"/>
-                            </svg>
-                            <svg className="w-4 h-4 fill-yellow-400" viewBox="0 0 14 13" fill="none"
-                                 xmlns="http://www.w3.org/2000/svg">
-                                <path
-                                    d="M7 0L9.4687 3.60213L13.6574 4.83688L10.9944 8.29787L11.1145 12.6631L7 11.2L2.8855 12.6631L3.00556 8.29787L0.342604 4.83688L4.5313 3.60213L7 0Z"/>
-                            </svg>
-                            <svg className="w-4 h-4 fill-[#CED5D8]" viewBox="0 0 14 13" fill="none"
-                                 xmlns="http://www.w3.org/2000/svg">
-                                <path
-                                    d="M7 0L9.4687 3.60213L13.6574 4.83688L10.9944 8.29787L11.1145 12.6631L7 11.2L2.8855 12.6631L3.00556 8.29787L0.342604 4.83688L4.5313 3.60213L7 0Z"/>
-                            </svg>
-
-                            <button type="button"
-                                    className="px-2.5 py-1.5 bg-slate-100 text-xs text-slate-900 rounded-md flex items-center cursor-pointer !ml-4">
-                                <svg xmlns="http://www.w3.org/2000/svg" className="w-3 mr-1" fill="currentColor"
-                                     viewBox="0 0 32 32">
-                                    <path
-                                        d="M14.236 21.954h-3.6c-.91 0-1.65-.74-1.65-1.65v-7.201c0-.91.74-1.65 1.65-1.65h3.6a.75.75 0 0 1 .75.75v9.001a.75.75 0 0 1-.75.75zm-3.6-9.001a.15.15 0 0 0-.15.15v7.2a.15.15 0 0 0 .15.151h2.85v-7.501z"
-                                        data-original="#000000"/>
-                                    <path
-                                        d="M20.52 21.954h-6.284a.75.75 0 0 1-.75-.75v-9.001c0-.257.132-.495.348-.633.017-.011 1.717-1.118 2.037-3.25.18-1.184 1.118-2.089 2.28-2.201a2.557 2.557 0 0 1 2.17.868c.489.56.71 1.305.609 2.042a9.468 9.468 0 0 1-.678 2.424h.943a2.56 2.56 0 0 1 1.918.862c.483.547.708 1.279.617 2.006l-.675 5.401a2.565 2.565 0 0 1-2.535 2.232zm-5.534-1.5h5.533a1.06 1.06 0 0 0 1.048-.922l.675-5.397a1.046 1.046 0 0 0-1.047-1.182h-2.16a.751.751 0 0 1-.648-1.13 8.147 8.147 0 0 0 1.057-3 1.059 1.059 0 0 0-.254-.852 1.057 1.057 0 0 0-.795-.365c-.577.052-.964.435-1.04.938-.326 2.163-1.71 3.507-2.369 4.036v7.874z"
-                                        data-original="#000000"/>
-                                    <path
-                                        d="M4 31.75a.75.75 0 0 1-.612-1.184c1.014-1.428 1.643-2.999 1.869-4.667.032-.241.055-.485.07-.719A14.701 14.701 0 0 1 1.25 15C1.25 6.867 7.867.25 16 .25S30.75 6.867 30.75 15 24.133 29.75 16 29.75a14.57 14.57 0 0 1-5.594-1.101c-2.179 2.045-4.61 2.81-6.281 3.09A.774.774 0 0 1 4 31.75zm12-30C8.694 1.75 2.75 7.694 2.75 15c0 3.52 1.375 6.845 3.872 9.362a.75.75 0 0 1 .217.55c-.01.373-.042.78-.095 1.186A11.715 11.715 0 0 1 5.58 29.83a10.387 10.387 0 0 0 3.898-2.37l.231-.23a.75.75 0 0 1 .84-.153A13.072 13.072 0 0 0 16 28.25c7.306 0 13.25-5.944 13.25-13.25S23.306 1.75 16 1.75z"
-                                        data-original="#000000"/>
-                                </svg>
-                                87 Reviews
-                            </button>
-                        </div>
-
-                        <div className="mt-8">
-                            <div className="flex items-center flex-wrap gap-4">
-                                <p className=" text-4xl font-semibold">$30</p>
-                                <p className="text-slate-400 text-sm mt-2"><strike>$42</strike> <span className="ml-1">Tax included</span>
-                                </p>
-                            </div>
-                        </div>
-
-                        <div className="mt-8">
-                            <h3 className="text-xl font-semibold ">Choose a Size</h3>
-                            <div className="flex flex-wrap gap-4 mt-4">
-                                <button type="button"
-                                        className="w-10 h-10 cursor-pointer border hover:border-slate-800 border-gray-300 font-semibold  text-sm rounded-full flex items-center justify-center shrink-0">SM
-                                </button>
-                                <button type="button"
-                                        className="w-10 h-10 cursor-pointer border hover:border-slate-800 border-gray-300 font-semibold  text-sm rounded-full flex items-center justify-center shrink-0">MD
-                                </button>
-                                <button type="button"
-                                        className="w-10 h-10 cursor-pointer border hover:border-slate-800 border-gray-300 font-semibold  text-sm rounded-full flex items-center justify-center shrink-0">LG
-                                </button>
-                                <button type="button"
-                                        className="w-10 h-10 cursor-pointer border hover:border-slate-800 border-gray-300 font-semibold  text-sm rounded-full flex items-center justify-center shrink-0">XL
-                                </button>
-                            </div>
-                        </div>
-
-                        <div className="mt-8 space-y-4">
-                            <button type="button"
-                                    className="w-full px-4 py-2.5 cursor-pointer border  bg-transparent hover:bg-slate-50 hover:text-black text-sm font-medium rounded-md">Add
-                                to cart
-                            </button>
-                            <button type="button"
-                                    className="w-full px-4 py-2.5 cursor-pointer border  bg-slate-800 hover:bg-slate-900 text-white text-sm font-medium rounded-md">Buy
-                                now
-                            </button>
-                        </div>
-
-                        <div className="mt-8">
-                            <div>
-                                <h3 className="text-xl font-semibold ">Product Description</h3>
-                                <p className="text-sm  mt-4">Elevate your casual style with our premium
-                                    men's t-shirt. Crafted for comfort and designed with a modern fit, this versatile
-                                    shirt is an essential addition to your wardrobe. The soft and breathable fabric
-                                    ensures all-day comfort, making it perfect for everyday wear. Its classic crew neck
-                                    and short sleeves offer a timeless look.</p>
-                            </div>
-
-                            <ul className="space-y-3 list-disc mt-4 pl-4 text-sm ">
-                                <li>A t-shirt is a wardrobe essential because it is so versatile.</li>
-                                <li>Available in a wide range of sizes, from extra small to extra large, and even in
-                                    tall and petite sizes.
-                                </li>
-                                <li>This is easy to care for. They can usually be machine-washed and dried on low
-                                    heat.
-                                </li>
-                                <li>You can add your own designs, paintings, or embroidery to make it your own.</li>
-                            </ul>
-                        </div>
-                    </div>
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-100 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 pt-24 pb-12 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto">
+          <div className="animate-pulse">
+            <div className="h-6 bg-gray-200 dark:bg-gray-700 rounded w-32 mb-8"></div>
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
+              <div className="space-y-4">
+                <div className="aspect-square bg-gray-200 dark:bg-gray-700 rounded-2xl"></div>
+                <div className="grid grid-cols-4 gap-2">
+                  {[1, 2, 3, 4].map((i) => (
+                    <div
+                      key={i}
+                      className="aspect-square bg-gray-200 dark:bg-gray-700 rounded-lg"
+                    ></div>
+                  ))}
                 </div>
+              </div>
+              <div className="space-y-6">
+                <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-24"></div>
+                <div className="h-8 bg-gray-200 dark:bg-gray-700 rounded w-3/4"></div>
+                <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-1/2"></div>
+                <div className="h-12 bg-gray-200 dark:bg-gray-700 rounded w-1/3"></div>
+                <div className="space-y-2">
+                  <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded"></div>
+                  <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded"></div>
+                  <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-2/3"></div>
+                </div>
+              </div>
             </div>
+          </div>
         </div>
-    )
-}
+      </div>
+    );
+  }
 
-export default ProductView
+  // Error state
+  if (error) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-100 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 pt-24 pb-12 px-4 sm:px-6 lg:px-8 flex items-center justify-center">
+        <div className="text-center">
+          <div className="text-red-500 text-6xl mb-4">⚠️</div>
+          <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-2">
+            Product Not Found
+          </h2>
+          <p className="text-gray-600 dark:text-gray-400 mb-4">
+            We couldn't find this product. It may have been removed or the link
+            is incorrect.
+          </p>
+          <Link
+            to="/all-products"
+            className="inline-flex items-center gap-2 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold px-6 py-3 rounded-full shadow-lg hover:shadow-xl transition-all duration-300"
+          >
+            <ArrowLeft className="w-4 h-4" />
+            Back to Products
+          </Link>
+        </div>
+      </div>
+    );
+  }
+
+  const product = data?.product;
+
+  if (!product) {
+    return null;
+  }
+
+  const images = product.images || [];
+  const selectedImage = images[selectedImageIndex] || "/placeholder.svg";
+
+  // Star rating component
+  const renderStars = (rating) => {
+    return Array.from({ length: 5 }, (_, index) => (
+      <Star
+        key={index}
+        className={`w-5 h-5 ${
+          index < Math.floor(rating)
+            ? "fill-yellow-400 text-yellow-400"
+            : index < rating
+            ? "fill-yellow-400/50 text-yellow-400"
+            : "fill-gray-200 text-gray-200 dark:fill-gray-600 dark:text-gray-600"
+        }`}
+      />
+    ));
+  };
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-100 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 pt-24 pb-12 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-7xl mx-auto">
+        {/* Back button */}
+        <Link
+          to="/all-products"
+          className="inline-flex items-center gap-2 text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 font-medium mb-8 transition-colors"
+        >
+          <ArrowLeft className="w-4 h-4" />
+          Back to Products
+        </Link>
+
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
+          {/* Product Images */}
+          <div className="space-y-4">
+            {/* Main Image */}
+            <div className="relative overflow-hidden rounded-2xl bg-white dark:bg-gray-800 shadow-lg">
+              <img
+                src={selectedImage}
+                alt={product.name}
+                className="w-full aspect-square object-cover hover:scale-105 transition-transform duration-500"
+              />
+              {product.badge && (
+                <span
+                  className={`absolute top-4 left-4 px-3 py-1.5 text-sm font-semibold rounded-full ${
+                    product.badge === "Best Seller"
+                      ? "bg-orange-500 text-white"
+                      : product.badge === "New"
+                      ? "bg-green-500 text-white"
+                      : product.badge === "Sale"
+                      ? "bg-red-500 text-white"
+                      : "bg-blue-500 text-white"
+                  }`}
+                >
+                  {product.badge}
+                </span>
+              )}
+              <button className="absolute top-4 right-4 p-3 bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm rounded-full shadow-lg hover:bg-white dark:hover:bg-gray-700 transition-all hover:scale-110">
+                <Heart className="w-5 h-5 text-gray-600 dark:text-gray-300 hover:text-red-500 transition-colors" />
+              </button>
+            </div>
+
+            {/* Thumbnail Images */}
+            {images.length > 1 && (
+              <div className="grid grid-cols-4 gap-3">
+                {images.map((image, index) => (
+                  <button
+                    key={index}
+                    onClick={() => setSelectedImageIndex(index)}
+                    className={`relative overflow-hidden rounded-lg border-2 transition-all ${
+                      selectedImageIndex === index
+                        ? "border-blue-600 ring-2 ring-blue-600/20"
+                        : "border-transparent hover:border-gray-300 dark:hover:border-gray-600"
+                    }`}
+                  >
+                    <img
+                      src={image}
+                      alt={`${product.name} ${index + 1}`}
+                      className="w-full aspect-square object-cover"
+                    />
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* Product Details */}
+          <div className="space-y-6">
+            {/* Brand */}
+            <p className="text-sm font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+              {product.brand}
+            </p>
+
+            {/* Title */}
+            <h1 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-gray-100">
+              {product.name}
+            </h1>
+
+            {/* Rating */}
+            <div className="flex items-center gap-3">
+              <div className="flex items-center gap-1">
+                {renderStars(product.rating || 0)}
+              </div>
+              <span className="text-sm text-gray-600 dark:text-gray-400">
+                ({product.numReviews || 0} reviews)
+              </span>
+            </div>
+
+            {/* Price */}
+            <div className="flex items-center gap-4">
+              <span className="text-4xl font-bold text-gray-900 dark:text-gray-100">
+                ₹{product.price?.toLocaleString()}
+              </span>
+              {product.originalPrice && product.originalPrice > product.price && (
+                <>
+                  <span className="text-xl text-gray-500 line-through">
+                    ₹{product.originalPrice.toLocaleString()}
+                  </span>
+                  {product.discount && (
+                    <span className="px-3 py-1 bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400 text-sm font-semibold rounded-full">
+                      {product.discount}% OFF
+                    </span>
+                  )}
+                </>
+              )}
+            </div>
+
+            {/* Stock Status */}
+            <div className="flex items-center gap-2">
+              {product.countInStock > 0 ? (
+                <>
+                  <Check className="w-5 h-5 text-green-500" />
+                  <span className="text-green-600 dark:text-green-400 font-medium">
+                    In Stock ({product.countInStock} available)
+                  </span>
+                </>
+              ) : (
+                <span className="text-red-600 dark:text-red-400 font-medium">
+                  Out of Stock
+                </span>
+              )}
+            </div>
+
+            {/* Key Features */}
+            {product.keyFeatures && product.keyFeatures.length > 0 && (
+              <div>
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-3">
+                  Key Features
+                </h3>
+                <div className="flex flex-wrap gap-2">
+                  {product.keyFeatures.map((feature, index) => (
+                    <span
+                      key={index}
+                      className="px-3 py-1.5 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 text-sm rounded-full"
+                    >
+                      {feature}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Quantity Selector */}
+            <div className="flex items-center gap-4">
+              <span className="text-gray-700 dark:text-gray-300 font-medium">
+                Quantity:
+              </span>
+              <div className="flex items-center border border-gray-300 dark:border-gray-600 rounded-lg">
+                <button
+                  onClick={() => setQuantity(Math.max(1, quantity - 1))}
+                  className="px-4 py-2 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors rounded-l-lg"
+                >
+                  -
+                </button>
+                <span className="px-4 py-2 text-gray-900 dark:text-gray-100 font-medium min-w-[50px] text-center">
+                  {quantity}
+                </span>
+                <button
+                  onClick={() =>
+                    setQuantity(Math.min(product.countInStock, quantity + 1))
+                  }
+                  className="px-4 py-2 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors rounded-r-lg"
+                >
+                  +
+                </button>
+              </div>
+            </div>
+
+            {/* Action Buttons */}
+            <div className="flex flex-col sm:flex-row gap-4">
+              <button
+                disabled={product.countInStock === 0}
+                className="flex-1 flex items-center justify-center gap-2 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 disabled:from-gray-400 disabled:to-gray-500 text-white font-semibold py-4 px-6 rounded-xl transition-all duration-300 transform hover:scale-105 hover:shadow-lg disabled:cursor-not-allowed disabled:hover:scale-100"
+              >
+                <ShoppingCart className="w-5 h-5" />
+                Add to Cart
+              </button>
+              <button
+                disabled={product.countInStock === 0}
+                className="flex-1 bg-gray-900 dark:bg-gray-100 hover:bg-gray-800 dark:hover:bg-white disabled:bg-gray-400 text-white dark:text-gray-900 font-semibold py-4 px-6 rounded-xl transition-all duration-300 transform hover:scale-105 hover:shadow-lg disabled:cursor-not-allowed disabled:hover:scale-100"
+              >
+                Buy Now
+              </button>
+            </div>
+
+            {/* Trust Badges */}
+            <div className="grid grid-cols-3 gap-4 pt-6 border-t border-gray-200 dark:border-gray-700">
+              <div className="flex flex-col items-center text-center">
+                <Truck className="w-8 h-8 text-blue-600 dark:text-blue-400 mb-2" />
+                <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                  Free Delivery
+                </span>
+              </div>
+              <div className="flex flex-col items-center text-center">
+                <Shield className="w-8 h-8 text-green-600 dark:text-green-400 mb-2" />
+                <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                  Secure Payment
+                </span>
+              </div>
+              <div className="flex flex-col items-center text-center">
+                <RotateCcw className="w-8 h-8 text-orange-600 dark:text-orange-400 mb-2" />
+                <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                  Easy Returns
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Product Description */}
+        {product.description && product.description.length > 0 && (
+          <div className="mt-16">
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-6">
+              Product Description
+            </h2>
+            <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-8">
+              <ul className="space-y-3">
+                {product.description.map((desc, index) => (
+                  <li
+                    key={index}
+                    className="flex items-start gap-3 text-gray-700 dark:text-gray-300"
+                  >
+                    <Check className="w-5 h-5 text-green-500 flex-shrink-0 mt-0.5" />
+                    <span>{desc}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+        )}
+
+        {/* Category Info */}
+        {product.category && (
+          <div className="mt-8">
+            <span className="text-sm text-gray-500 dark:text-gray-400">
+              Category:{" "}
+              <Link
+                to={`/products/category/${
+                  product.category._id || product.category
+                }`}
+                className="text-blue-600 dark:text-blue-400 hover:underline"
+              >
+                {product.category.categoryName || "View Category"}
+              </Link>
+            </span>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
+
+export default ProductView;
