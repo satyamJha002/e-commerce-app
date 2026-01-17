@@ -6,6 +6,7 @@ import {
   useGoogleLoginMutation,
 } from "../slices/authApiSlice.js";
 import { setCredentials } from "../slices/authSlice.js";
+import { setCartUser } from "../slices/cartSlice.js";
 import { toast } from "react-toastify";
 import { GoogleLogin } from "@react-oauth/google";
 
@@ -26,6 +27,8 @@ const Login = () => {
         token: credentialResponse.credential,
       }).unwrap();
       dispatch(setCredentials(res));
+      // Load user-specific cart
+      dispatch(setCartUser(res._id || res.id));
       navigate("/");
       toast.success("Logged in successfully");
     } catch (err) {
@@ -56,6 +59,8 @@ const Login = () => {
         rememberMe: isRemember,
       }).unwrap();
       dispatch(setCredentials(response));
+      // Load user-specific cart
+      dispatch(setCartUser(response._id || response.id));
 
       if (isRemember) {
         localStorage.setItem("rememberEmail", email);
