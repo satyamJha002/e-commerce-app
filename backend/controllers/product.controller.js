@@ -85,20 +85,20 @@ const creatProducts = asyncHandler(async (req, res) => {
   const transformedKeyFeatures = Array.isArray(keyFeatures)
     ? keyFeatures
     : typeof keyFeatures === "string"
-    ? keyFeatures
-        .split(",")
-        .map((s) => s.trim())
-        .filter((s) => s)
-    : [];
+      ? keyFeatures
+          .split(",")
+          .map((s) => s.trim())
+          .filter((s) => s)
+      : [];
 
   const transformedDescription = Array.isArray(description)
     ? description
     : typeof description === "string"
-    ? description
-        .split("\n")
-        .map((s) => s.trim())
-        .filter((s) => s)
-    : [];
+      ? description
+          .split("\n")
+          .map((s) => s.trim())
+          .filter((s) => s)
+      : [];
 
   const calculatedDiscount =
     discount ??
@@ -431,14 +431,14 @@ const updateProductById = asyncHandler(async (req, res) => {
     // Recalculate discount if needed
     if ((discount === undefined || discount === "") && originalPrice && price) {
       updateFields.discount = Math.round(
-        ((Number(originalPrice) - Number(price)) / Number(originalPrice)) * 100
+        ((Number(originalPrice) - Number(price)) / Number(originalPrice)) * 100,
       );
     }
 
     const updatedProduct = await Product.findByIdAndUpdate(
       { $eq: id },
       { $set: updateFields },
-      { new: true, runValidators: true }
+      { new: true, runValidators: true },
     );
 
     res.status(200).json({
@@ -491,12 +491,12 @@ const getProductsByCategory = asyncHandler(async (req, res) => {
           productCount: products.length,
           products: products,
         };
-      })
+      }),
     );
 
     // Filter out categories with no products
     const filteredCategories = categoriesWithProducts.filter(
-      (cat) => cat.products.length > 0
+      (cat) => cat.products.length > 0,
     );
 
     return res.status(200).json({
@@ -552,7 +552,7 @@ const getProductsByCategoryName = asyncHandler(async (req, res) => {
         .lean();
       console.log(
         `Category "${categoryName}" not found. Available categories:`,
-        availableCategories.map((c) => c.categoryName)
+        availableCategories.map((c) => c.categoryName),
       );
 
       return res.status(200).json({
@@ -571,7 +571,13 @@ const getProductsByCategoryName = asyncHandler(async (req, res) => {
     const skip = (pageNum - 1) * limitNum;
 
     // Build sort options
-    const validSortFields = ["name", "price", "createdAt", "rating", "discount"];
+    const validSortFields = [
+      "name",
+      "price",
+      "createdAt",
+      "rating",
+      "discount",
+    ];
     const sortField = validSortFields.includes(sortBy) ? sortBy : "createdAt";
     const sortOptions = { [sortField]: sortOrder === "asc" ? 1 : -1 };
 
