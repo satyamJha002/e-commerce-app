@@ -6,6 +6,7 @@ import {
   deleteProductById,
   updateProductById,
   getProductsByCategory,
+  getProductsByCategoryName,
 } from "../controllers/product.controller.js";
 import { protectAuthMiddleware, admin } from "../middleware/authMiddleware.js";
 import { uploadMultiple } from "../middleware/uploadMiddleware.js";
@@ -35,5 +36,8 @@ router.patch(
   updateProductById
 );
 router.get("/products-by-category", getProductsByCategory);
+
+// Public endpoint - get products by category name
+router.get("/by-category-name/:categoryName", getProductsByCategoryName);
 
 export default router;

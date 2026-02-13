@@ -32,6 +32,7 @@ import CustomerManagement from "./Pages/Admin/CustomerManagement.jsx";
 import Setting from "./Pages/Admin/Setting.jsx";
 import Categories from "./Pages/Admin/MasterData/Catgories/Categories.jsx";
 import SubCategories from "./Pages/Admin/MasterData/SubCategories/SubCategories.jsx";
+import SubCategoryPage from "./component/SubCategoryPage.jsx";
 
 const App = () => {
   const location = useLocation();
@@ -79,6 +80,12 @@ const App = () => {
           element={<HomeAndGarden />}
         />
         <Route path="/categories/sports" element={<Sports />} />
+
+        {/* Dynamic Subcategory Route */}
+        <Route
+          path="/category/:categoryName/:subCategoryName"
+          element={<SubCategoryPage />}
+        />
 
         {/* Products */}
         <Route path="/products/shoes" element={<Shoes />} />

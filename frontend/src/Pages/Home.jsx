@@ -41,7 +41,7 @@ const Home = () => {
     {
       id: 3,
       src: "https://images.pexels.com/photos/4050387/pexels-photo-4050387.jpeg",
-      title: "Home & Garden",
+      title: "Home & Kitchen",
       path: "/categories/home-and-appliances",
       icon: "🏠",
     },

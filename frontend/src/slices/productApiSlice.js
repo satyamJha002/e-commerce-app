@@ -48,6 +48,14 @@ export const productApiSlice = apiSlice.injectEndpoints({
       }),
       keepUnusedDataFor: 5,
     }),
+    // New endpoint - Get products by category name (for category pages)
+    getProductsByCategoryName: builder.query({
+      query: ({ categoryName, page = 1, limit = 50 }) => ({
+        url: `${PRODUCTS_URL}/by-category-name/${categoryName}`,
+        params: { page, limit },
+      }),
+      keepUnusedDataFor: 5,
+    }),
   }),
 });
 
@@ -55,6 +63,7 @@ export const {
   useGetAllProductsQuery,
   useGetProductsByCategoryQuery,
   useGetProductsByFilterQuery,
+  useGetProductsByCategoryNameQuery,
   useCreateProductMutation,
   useDeleteProductMutation,
   useGetProductByIdQuery,

@@ -25,6 +25,23 @@ export const subCategoryApiSlice = apiSlice.injectEndpoints({
       }),
     }),
 
+    // Public endpoint - no auth required
+    getSubCategoriesByCategoryName: builder.query({
+      query: (categoryName) => ({
+        url: `${SUBCATEGORY_URL}/by-category-name/${categoryName}`,
+        method: "GET",
+      }),
+    }),
+
+    // Public endpoint - Get products by category and subcategory name
+    getProductsBySubCategory: builder.query({
+      query: ({ categoryName, subCategoryName, page = 1, limit = 20 }) => ({
+        url: `${SUBCATEGORY_URL}/products/${categoryName}/${subCategoryName}`,
+        method: "GET",
+        params: { page, limit },
+      }),
+    }),
+
     updateSubCategory: builder.mutation({
       query: ({ id, ...data }) => ({
         url: `${SUBCATEGORY_URL}/update-sub-categories/${id}`,
@@ -45,6 +62,8 @@ export const subCategoryApiSlice = apiSlice.injectEndpoints({
 export const {
   useCreateSubCategoryMutation,
   useGetAllSubCategoryQuery,
+  useGetSubCategoriesByCategoryNameQuery,
+  useGetProductsBySubCategoryQuery,
   useUpdateSubCategoryMutation,
   useDeleteSubCategoryMutation,
 } = subCategoryApiSlice;

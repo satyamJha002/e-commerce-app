@@ -5,9 +5,15 @@ import {
   getAllSubCategory,
   updateSubCategory,
   deleteSubCategory,
+  getSubCategoriesByCategoryName,
+  getProductsBySubCategory,
 } from "../controllers/subCategories.controller.js";
 
 const router = express.Router();
+
+// Public routes - no authentication required
+router.get("/by-category-name/:categoryName", getSubCategoriesByCategoryName);
+router.get("/products/:categoryName/:subCategoryName", getProductsBySubCategory);
 
 router.post(
   "/create-sub-categories",

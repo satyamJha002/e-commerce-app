@@ -5,8 +5,8 @@ const HomeAndGarden = () => {
   return (
     <CategoryPage
       categoryName="home"
-      categoryTitle="Home & Garden"
-      categoryDescription="Transform your living space with furniture, décor, and garden essentials."
+      categoryTitle="Home & Kitchen"
+      categoryDescription="Transform your living space with furniture, décor, kitchenware, and home essentials."
       categoryImage="https://images.pexels.com/photos/4050387/pexels-photo-4050387.jpeg"
       categoryIcon="🏠"
     />

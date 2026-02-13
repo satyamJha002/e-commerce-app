@@ -1,18 +1,18 @@
 import {apiSlice} from './apiSlice.js'
-import {BASE_URL} from '../constants.js'
+import {PROFILE_URL} from '../constants.js'
 
 export const profileApiSlice = apiSlice.injectEndpoints({
     endpoints: (builder) => ({
         getProfile: builder.query({
             query: () => ({
-                url: `${BASE_URL}/api/profile`,
+                url: PROFILE_URL,
                 credentials: 'include',
             }),
             providesTags: ['Profile']
         }),
         updateProfileDetails: builder.mutation({
             query: (data) => ({
-                url: `${BASE_URL}/api/profile`,
+                url: PROFILE_URL,
                 method: 'PUT',
                 body: data,
                 credentials: 'include',
@@ -21,7 +21,7 @@ export const profileApiSlice = apiSlice.injectEndpoints({
         }),
         updateAvatar: builder.mutation({
             query: (data) => ({
-                url: `${BASE_URL}/api/profile/upload-avatar`,
+                url: `${PROFILE_URL}/upload-avatar`,
                 method: 'POST',
                 body: data,
                 credentials: 'include',

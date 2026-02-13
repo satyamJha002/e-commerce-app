@@ -1,7 +1,8 @@
 import React from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
-import { useGetProductsByFilterQuery } from "../slices/productApiSlice.js";
+import { useGetProductsByCategoryNameQuery } from "../slices/productApiSlice.js";
+import { useGetSubCategoriesByCategoryNameQuery } from "../slices/subCategoryApiSlice.js";
 import { addToCart } from "../slices/cartSlice.js";
 import { toast } from "react-toastify";
 import {
@@ -12,6 +13,8 @@ import {
   Filter,
   Loader2,
   ShoppingBag,
+  Tag,
+  ChevronRight,
 } from "lucide-react";
 
 const CategoryPage = ({
@@ -24,13 +27,18 @@ const CategoryPage = ({
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
+  // Use the new API that properly fetches products by category ObjectId
   const {
     data: productsData,
     isLoading,
     error,
-  } = useGetProductsByFilterQuery({ search: categoryName, limit: 50 });
+  } = useGetProductsByCategoryNameQuery({ categoryName, limit: 50 });
+
+  const { data: subCategoriesData, isLoading: isLoadingSubCategories } =
+    useGetSubCategoriesByCategoryNameQuery(categoryName);
 
   const products = productsData?.products || [];
+  const subCategories = subCategoriesData?.data || [];
 
   const handleAddToCart = (product) => {
     dispatch(
@@ -76,6 +84,11 @@ const CategoryPage = ({
     );
   }
 
+  // Check if category was not found in the database
+  const categoryNotFound = productsData?.category === null;
+  const availableCategories = productsData?.availableCategories || [];
+
+
   return (
     <div className="mt-20 min-h-screen bg-gray-50 dark:bg-gray-900">
       {/* Category Hero */}
@@ -109,8 +122,101 @@ const CategoryPage = ({
         </div>
       </div>
 
+      {/* Category Not Found Warning */}
+      {categoryNotFound && (
+        <div className="max-w-6xl mx-auto px-4 md:px-8 py-8">
+          <div className="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-xl p-6">
+            <h3 className="text-lg font-semibold text-yellow-800 dark:text-yellow-200 mb-2">
+              ⚠️ Category Not Found
+            </h3>
+            <p className="text-yellow-700 dark:text-yellow-300 mb-3">
+              The category "{categoryName}" doesn't exist in the database yet.
+              Please create it in the Admin Panel.
+            </p>
+            {availableCategories.length > 0 && (
+              <div>
+                <p className="text-sm text-yellow-600 dark:text-yellow-400 mb-2">
+                  Available categories in database:
+                </p>
+                <div className="flex flex-wrap gap-2">
+                  {availableCategories.map((cat, idx) => (
+                    <span
+                      key={idx}
+                      className="bg-yellow-100 dark:bg-yellow-900 text-yellow-800 dark:text-yellow-200 px-3 py-1 rounded-full text-sm"
+                    >
+                      {cat}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            )}
+            {availableCategories.length === 0 && (
+              <p className="text-sm text-yellow-600 dark:text-yellow-400">
+                No categories exist yet. Please create categories in the Admin Panel first.
+              </p>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* Subcategories Section */}
+      {subCategories.length > 0 && (
+        <div className="max-w-6xl mx-auto px-4 md:px-8 py-8">
+          <div className="flex items-center gap-2 mb-6">
+            <Tag className="w-5 h-5 text-indigo-600" />
+            <h2 className="text-xl font-bold text-gray-900 dark:text-white">
+              Shop by Subcategory
+            </h2>
+          </div>
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+            {subCategories.map((subCategory) => (
+              <Link
+                key={subCategory._id}
+                to={`/category/${categoryName}/${subCategory.name
+                  .toLowerCase()
+                  .replace(/\s+/g, "-")}`}
+                className="group relative bg-white dark:bg-gray-800 rounded-xl p-4 shadow-md hover:shadow-lg transition-all duration-300 hover:-translate-y-1 border border-gray-100 dark:border-gray-700"
+              >
+                <div className="flex items-center justify-between">
+                  <div className="flex-1">
+                    <h3 className="font-medium text-gray-900 dark:text-white text-sm group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">
+                      {subCategory.name}
+                    </h3>
+                    {subCategory.description && (
+                      <p className="text-xs text-gray-500 dark:text-gray-400 mt-1 line-clamp-2">
+                        {subCategory.description}
+                      </p>
+                    )}
+                  </div>
+                  <ChevronRight className="w-4 h-4 text-gray-400 group-hover:text-indigo-600 transition-colors flex-shrink-0 ml-2" />
+                </div>
+                <div className="absolute inset-0 rounded-xl border-2 border-transparent group-hover:border-indigo-500/20 transition-colors"></div>
+              </Link>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Loading subcategories indicator */}
+      {isLoadingSubCategories && (
+        <div className="max-w-6xl mx-auto px-4 md:px-8 py-4">
+          <div className="flex items-center gap-2 text-gray-500">
+            <Loader2 className="w-4 h-4 animate-spin" />
+            <span className="text-sm">Loading subcategories...</span>
+          </div>
+        </div>
+      )}
+
       {/* Products Grid */}
       <div className="max-w-6xl mx-auto px-4 md:px-8 py-8">
+        <div className="flex items-center justify-between mb-6">
+          <h2 className="text-xl font-bold text-gray-900 dark:text-white">
+            All {categoryTitle} Products
+          </h2>
+          <span className="text-sm text-gray-500 dark:text-gray-400">
+            {products.length} items
+          </span>
+        </div>
         {products.length === 0 ? (
           <div className="text-center py-16">
             <ShoppingBag className="w-24 h-24 text-gray-300 mx-auto mb-4" />
