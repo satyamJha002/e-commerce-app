@@ -35,6 +35,24 @@ export const authApiSlice = apiSlice.injectEndpoints({
       keepUnusedDataFor: 5,
     }),
 
+    // Admin: get all users (customers)
+    getAllUsers: builder.query({
+      query: () => ({
+        url: `${BASE_URL}/api/auth/users`,
+      }),
+      providesTags: ["User"],
+      keepUnusedDataFor: 5,
+    }),
+
+    // Admin: get user details by ID (auth + profile)
+    getAdminUserDetails: builder.query({
+      query: (userId) => ({
+        url: `${BASE_URL}/api/auth/users/${userId}`,
+      }),
+      providesTags: (result, error, userId) => [{ type: "User", id: userId }],
+      keepUnusedDataFor: 5,
+    }),
+
     refreshToken: builder.mutation({
       query: () => ({
         url: `${BASE_URL}/api/auth/refresh-token`,
@@ -67,4 +85,6 @@ export const {
   useGoogleLoginMutation,
   useLogoutMutation,
   useGetMeQuery,
+  useGetAllUsersQuery,
+  useGetAdminUserDetailsQuery,
 } = authApiSlice;

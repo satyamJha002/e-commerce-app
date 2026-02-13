@@ -31,6 +31,22 @@ export const orderApiSlice = apiSlice.injectEndpoints({
       }),
       keepUnusedDataFor: 5,
     }),
+    // Admin: get all orders
+    getAllOrders: builder.query({
+      query: () => ({
+        url: ORDERS_URL,
+      }),
+      providesTags: ["Order"],
+      keepUnusedDataFor: 5,
+    }),
+    // Admin: mark order as delivered
+    updateOrderToDelivered: builder.mutation({
+      query: (id) => ({
+        url: `${ORDERS_URL}/${id}/deliver`,
+        method: "PUT",
+      }),
+      invalidatesTags: ["Order"],
+    }),
   }),
 });
 
@@ -39,4 +55,6 @@ export const {
   useVerifyPaymentMutation,
   useGetMyOrdersQuery,
   useGetOrderByIdQuery,
+  useGetAllOrdersQuery,
+  useUpdateOrderToDeliveredMutation,
 } = orderApiSlice;

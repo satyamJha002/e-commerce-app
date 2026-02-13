@@ -142,7 +142,7 @@ export const getOrderById = async (req, res) => {
   try {
     const order = await Order.findById(req.params.id).populate(
       "user",
-      "firstName lastName email"
+      "firstName lastName email",
     );
 
     if (!order) {
