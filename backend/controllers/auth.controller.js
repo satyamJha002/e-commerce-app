@@ -1,5 +1,6 @@
 import asyncHandler from "../middleware/asyncHandler.js";
 import Auth from "../models/auth.model.js";
+import UserDetails from "../models/userDetails.model.js";
 import { generateRefreshToken, generateToken } from "../utils/generateToken.js";
 import jwt from "jsonwebtoken";
 import { OAuth2Client } from "google-auth-library";
@@ -269,4 +270,37 @@ const googleLogin = asyncHandler(async (req, res) => {
   });
 });
 
-export { register, login, getMe, logout, refreshToken, googleLogin };
+// @desc    Get all users (Admin)
+// @route   GET /api/auth/users
+// @access  Private/Admin
+const getAllUsers = asyncHandler(async (req, res) => {
+  const users = await Auth.find({})
+    .select("-password -refreshToken")
+    .sort({ createdAt: -1 });
+  res.status(200).json(users);
+});
+
+// @desc    Get user by ID with profile details (Admin)
+// @route   GET /api/auth/users/:id
+// @access  Private/Admin
+const getUserById = asyncHandler(async (req, res) => {
+  const auth = await Auth.findById(req.params.id).select("-password -refreshToken");
+  if (!auth) {
+    res.status(404);
+    throw new Error("User not found");
+  }
+  const profile = await UserDetails.findOne({ auth: auth._id });
+  res.status(200).json({
+    user: {
+      _id: auth._id,
+      email: auth.email,
+      username: auth.username,
+      role: auth.role,
+      isAdmin: auth.isAdmin,
+      createdAt: auth.createdAt,
+    },
+    profile: profile || null,
+  });
+});
+
+export { register, login, getMe, logout, refreshToken, googleLogin, getAllUsers, getUserById };

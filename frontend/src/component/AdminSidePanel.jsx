@@ -1,7 +1,14 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { useLogoutMutation } from "../slices/authApiSlice";
+import { logout as logoutAction } from "../slices/authSlice";
+import { toast } from "react-toastify";
 
 const AdminSidePanel = ({ activeTab, handleTabClick }) => {
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const [logoutApiCall, { isLoading: isLoggingOut }] = useLogoutMutation();
   const [hoverDropDown, setHoverDropDown] = useState(null);
   const [closeTimeout, setCloseTimeout] = useState(null);
   const menuItems = [
@@ -76,6 +83,17 @@ const AdminSidePanel = ({ activeTab, handleTabClick }) => {
     setHoverDropDown(null);
   };
 
+  const handleLogout = async () => {
+    try {
+      await logoutApiCall().unwrap();
+      dispatch(logoutAction());
+      toast.success("Logged out successfully");
+      navigate("/login");
+    } catch (err) {
+      toast.error(err?.data?.message || "Logout failed");
+    }
+  };
+
   return (
     <aside className="w-64 bg-gray-700 dark:bg-background-dark flex flex-col border-r border-background-light dark:border-background-dark/20">
       <div className="p-6">
@@ -138,6 +156,18 @@ const AdminSidePanel = ({ activeTab, handleTabClick }) => {
           </div>
         ))}
       </nav>
+
+      <div className="p-4 border-t border-gray-600 dark:border-background-dark/20">
+        <button
+          type="button"
+          onClick={handleLogout}
+          disabled={isLoggingOut}
+          className="flex items-center justify-center gap-3 w-full px-4 py-2.5 rounded-lg text-red-400 hover:bg-red-500/10 dark:hover:bg-red-500/10 transition-colors duration-200 font-medium disabled:opacity-50"
+        >
+          <span className="material-icons text-xl">logout</span>
+          <span>{isLoggingOut ? "Logging out..." : "Logout"}</span>
+        </button>
+      </div>
     </aside>
   );
 };
