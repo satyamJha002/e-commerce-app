@@ -512,6 +512,110 @@ const getProductsByCategory = asyncHandler(async (req, res) => {
   }
 });
 
+// Public endpoint - Get products by category name (for category pages)
+const getProductsByCategoryName = asyncHandler(async (req, res) => {
+  const { categoryName } = req.params;
+  const {
+    page = 1,
+    limit = 50,
+    sortBy = "createdAt",
+    sortOrder = "desc",
+  } = req.query;
+
+  if (!categoryName) {
+    res.status(400);
+    throw new Error("Category name is required");
+  }
+
+  try {
+    // Import Categories model
+    const Categories = (await import("../models/categories.model.js")).default;
+
+    // Find the category by name (case-insensitive, also handle partial matches like "home" for "Home & Garden")
+    let category = await Categories.findOne({
+      categoryName: { $regex: new RegExp(`^${categoryName}$`, "i") },
+      status: "Active",
+    });
+
+    // If exact match fails, try partial match (e.g., "sports" matches "Sports & Outdoors")
+    if (!category) {
+      category = await Categories.findOne({
+        categoryName: { $regex: new RegExp(categoryName, "i") },
+        status: "Active",
+      });
+    }
+
+    if (!category) {
+      // Log available categories for debugging
+      const availableCategories = await Categories.find({ status: "Active" })
+        .select("categoryName")
+        .lean();
+      console.log(
+        `Category "${categoryName}" not found. Available categories:`,
+        availableCategories.map((c) => c.categoryName)
+      );
+
+      return res.status(200).json({
+        success: true,
+        products: [],
+        category: null,
+        pagination: { totalProducts: 0, totalPages: 0, currentPage: 1 },
+        message: `Category not found. Please create a category matching "${categoryName}" in the admin panel.`,
+        availableCategories: availableCategories.map((c) => c.categoryName),
+      });
+    }
+
+    // Parse pagination
+    const pageNum = Math.max(1, parseInt(page));
+    const limitNum = Math.max(1, Math.min(parseInt(limit), 100));
+    const skip = (pageNum - 1) * limitNum;
+
+    // Build sort options
+    const validSortFields = ["name", "price", "createdAt", "rating", "discount"];
+    const sortField = validSortFields.includes(sortBy) ? sortBy : "createdAt";
+    const sortOptions = { [sortField]: sortOrder === "asc" ? 1 : -1 };
+
+    // Find products with this category
+    const filter = { category: category._id };
+
+    const [products, totalProducts] = await Promise.all([
+      Product.find(filter)
+        .populate("category", "categoryName categoryImage")
+        .populate("subCategory", "name description")
+        .sort(sortOptions)
+        .skip(skip)
+        .limit(limitNum)
+        .select("-reviews")
+        .lean(),
+      Product.countDocuments(filter),
+    ]);
+
+    const totalPages = Math.ceil(totalProducts / limitNum);
+
+    return res.status(200).json({
+      success: true,
+      products,
+      category: {
+        _id: category._id,
+        name: category.categoryName,
+        image: category.categoryImage,
+        description: category.categoryDescp,
+      },
+      pagination: {
+        totalProducts,
+        totalPages,
+        currentPage: pageNum,
+        hasNextPage: pageNum < totalPages,
+        hasPrevPage: pageNum > 1,
+      },
+    });
+  } catch (error) {
+    console.error("Error fetching products by category name:", error);
+    res.status(500);
+    throw new Error("Server error while fetching products by category");
+  }
+});
+
 export {
   creatProducts,
   getProducts,
@@ -519,4 +623,5 @@ export {
   deleteProductById,
   updateProductById,
   getProductsByCategory,
+  getProductsByCategoryName,
 };
