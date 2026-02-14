@@ -15,7 +15,6 @@ import {
   Settings,
   Package,
   ChevronDown,
-  Store,
 } from "lucide-react";
 
 const Header = () => {
@@ -57,11 +56,13 @@ const Header = () => {
           {/* Logo */}
           <Link
             to="/"
-            className="flex items-center gap-2 text-xl font-bold text-gray-900 dark:text-white hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors"
+            className="flex items-center gap-2 text-xl font-bold text-gray-900 dark:text-white hover:opacity-90 transition-opacity"
           >
-            <div className="w-8 h-8 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-lg flex items-center justify-center">
-              <Store className="w-5 h-5 text-white" />
-            </div>
+            <img
+              src="/Logo%20with%20Rich%20Blue%20and%20Vibrant%20Orange.png"
+              alt="EliteMart"
+              className="h-8 w-auto object-contain"
+            />
             <span className="hidden sm:inline">EliteMart</span>
           </Link>
 
