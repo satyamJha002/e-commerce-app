@@ -75,7 +75,7 @@ const Home = () => {
 
   const prevSlide = () => {
     setCurrentSlide(
-      (prev) => (prev - 1 + carouselImages.length) % carouselImages.length
+      (prev) => (prev - 1 + carouselImages.length) % carouselImages.length,
     );
   };
 
@@ -94,7 +94,7 @@ const Home = () => {
         price: product.price,
         image: product.images?.[0] || "/placeholder.svg",
         quantity: 1,
-      })
+      }),
     );
     toast.success("Added to cart!");
   };
@@ -428,7 +428,7 @@ const Home = () => {
       </div>
 
       {/* Testimonials Section */}
-      <div className="my-16 px-4 md:px-8 lg:px-16">
+      <div className="my-16 px-4 md:px-8 lg:px-16 py-20">
         <div className="text-center mb-10">
           <h2 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white">
             What Our Customers Say
@@ -479,7 +479,7 @@ const Home = () => {
       </div>
 
       {/* Newsletter Signup */}
-      <div className="my-16 px-4 md:px-8 lg:px-16">
+      {/* <div className="my-16 px-4 md:px-8 lg:px-16 lg:py-20 ">
         <div className="bg-indigo-50 dark:bg-gray-800 p-8 md:p-12 rounded-2xl text-center">
           <h2 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white">
             Join Our Newsletter
@@ -502,7 +502,7 @@ const Home = () => {
             </button>
           </form>
         </div>
-      </div>
+      </div> */}
     </div>
   );
 };

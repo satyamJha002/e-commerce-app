@@ -89,7 +89,7 @@ const Profile = () => {
     totalSpent:
       orders?.reduce(
         (sum, order) => sum + ((order?.totalPrice ?? order?.total) || 0),
-        0
+        0,
       ) || 0,
   };
 
@@ -163,7 +163,10 @@ const Profile = () => {
 
               <div className="stat bg-primary-content/20 rounded-lg text-primary-content flex justify-content-between items-center">
                 <div className="stat-value text-2xl">
-                  ₹{orders.reduce((sum, order) => sum + (order?.totalPrice || 0), 0).toLocaleString()}
+                  ₹
+                  {orders
+                    .reduce((sum, order) => sum + (order?.totalPrice || 0), 0)
+                    .toLocaleString()}
                 </div>
                 <div className="stat-title text-2xl font-semibold text-primary-content/50">
                   Total Spent
@@ -267,11 +270,14 @@ const Profile = () => {
                                 #{order._id.slice(-8).toUpperCase()}
                               </td>
                               <td>
-                                {new Date(order.createdAt).toLocaleDateString("en-IN", {
-                                  year: "numeric",
-                                  month: "short",
-                                  day: "numeric",
-                                })}
+                                {new Date(order.createdAt).toLocaleDateString(
+                                  "en-IN",
+                                  {
+                                    year: "numeric",
+                                    month: "short",
+                                    day: "numeric",
+                                  },
+                                )}
                               </td>
                               <td className="font-semibold">
                                 ₹{order.totalPrice?.toLocaleString()}
@@ -280,21 +286,31 @@ const Profile = () => {
                                 <div
                                   className={`badge ${getStatusBadge(
                                     order.isPaid,
-                                    order.isDelivered
+                                    order.isDelivered,
                                   )} badge-lg`}
                                 >
-                                  {getStatusText(order.isPaid, order.isDelivered)}
+                                  {getStatusText(
+                                    order.isPaid,
+                                    order.isDelivered,
+                                  )}
                                 </div>
                               </td>
                               <td>
                                 <div className="text-sm">
-                                  {order.orderItems?.slice(0, 2).map((item, index) => (
-                                    <div key={index} className="opacity-70 truncate max-w-[150px]">
-                                      {item.name} (x{item.quantity})
-                                    </div>
-                                  ))}
+                                  {order.orderItems
+                                    ?.slice(0, 2)
+                                    .map((item, index) => (
+                                      <div
+                                        key={index}
+                                        className="opacity-70 truncate max-w-[150px]"
+                                      >
+                                        {item.name} (x{item.quantity})
+                                      </div>
+                                    ))}
                                   {order.orderItems?.length > 2 && (
-                                    <div className="opacity-50 text-xs">+{order.orderItems.length - 2} more</div>
+                                    <div className="opacity-50 text-xs">
+                                      +{order.orderItems.length - 2} more
+                                    </div>
                                   )}
                                 </div>
                               </td>
@@ -342,7 +358,7 @@ const Profile = () => {
           </div>
 
           {/* Quick Actions */}
-          <div className="mt-8">
+          {/* <div className="mt-8">
             <div className="card bg-base-100 shadow-xl">
               <div className="card-body">
                 <h3 className="card-title text-xl mb-4">Quick Actions</h3>
@@ -370,7 +386,7 @@ const Profile = () => {
                 </div>
               </div>
             </div>
-          </div>
+          </div> */}
         </div>
       </div>
 

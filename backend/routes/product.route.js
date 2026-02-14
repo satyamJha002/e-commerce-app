@@ -7,6 +7,7 @@ import {
   updateProductById,
   getProductsByCategory,
   getProductsByCategoryName,
+  searchProducts,
 } from "../controllers/product.controller.js";
 import { protectAuthMiddleware, admin } from "../middleware/authMiddleware.js";
 import { uploadMultiple } from "../middleware/uploadMiddleware.js";
@@ -18,7 +19,7 @@ router.post(
   protectAuthMiddleware,
   admin,
   uploadMultiple("images"),
-  creatProducts
+  creatProducts,
 );
 router.get("/allproducts", getProducts);
 router.get("/getproductdetails/:id", getProductById);
@@ -26,18 +27,21 @@ router.delete(
   "/deleteproduct/:id",
   protectAuthMiddleware,
   admin,
-  deleteProductById
+  deleteProductById,
 );
 router.patch(
   "/updateproduct/:id",
   protectAuthMiddleware,
   admin,
   uploadMultiple("images"),
-  updateProductById
+  updateProductById,
 );
 router.get("/products-by-category", getProductsByCategory);
 
 // Public endpoint - get products by category name
 router.get("/by-category-name/:categoryName", getProductsByCategoryName);
+
+// Public endpoint - search products
+router.get("/search", searchProducts);
 
 export default router;
