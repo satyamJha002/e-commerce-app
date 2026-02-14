@@ -180,10 +180,12 @@ const getProducts = asyncHandler(async (req, res) => {
   }
 
   if (search) {
+    const searchRegex = new RegExp(search, "i");
     filter.$or = [
-      { name: { $regex: search, $options: "i" } },
-      { description: { $regex: search, $options: "i" } },
-      { keyFeatures: { $in: [new RegExp(search, "i")] } },
+      { name: searchRegex },
+      { description: searchRegex },
+      { keyFeatures: { $in: [searchRegex] } },
+      { brand: searchRegex },
     ];
   }
 
@@ -622,6 +624,37 @@ const getProductsByCategoryName = asyncHandler(async (req, res) => {
   }
 });
 
+const searchProducts = asyncHandler(async (req, res) => {
+  const { searchQuery } = req.query;
+
+  if (!searchQuery) {
+    res.status(400);
+    throw new Error("Search query is required");
+  }
+
+  try {
+    const products = await Product.find({
+      $or: [
+        { name: { $regex: searchQuery, $options: "i" } },
+        { description: { $regex: searchQuery, $options: "i" } },
+        { keyFeatures: { $regex: searchQuery, $options: "i" } },
+      ],
+    })
+      .populate("category", "categoryName")
+      .populate("subCategory", "name description");
+
+    return res.status(200).json({
+      success: true,
+      products,
+      message: "Products searched successfully",
+    });
+  } catch (error) {
+    console.error("Error searching products:", error);
+    res.status(500);
+    throw new Error("Server error while searching products");
+  }
+});
+
 export {
   creatProducts,
   getProducts,
@@ -630,4 +663,5 @@ export {
   updateProductById,
   getProductsByCategory,
   getProductsByCategoryName,
+  searchProducts,
 };
