@@ -38,6 +38,20 @@ app.get("/", (req, res) => {
   res.send("API is running");
 });
 
+// Debug: confirm this server is the one receiving requests (remove after fixing)
+app.get("/api/health", (req, res) => {
+  res.json({
+    ok: true,
+    message: "Backend is this app",
+    authRouteLoaded: !!authRoute,
+  });
+});
+
+// Debug: direct route to see if POST /api/auth/register reaches this app (remove after fixing)
+app.post("/api/auth/register", (req, res) => {
+  res.status(200).json({ debug: true, message: "Request reached index.js" });
+});
+
 app.use("/api/product", productRoute);
 app.use("/api/subCategory", subCategoryRoute);
 app.use("/api/category", categoryRoute);
@@ -50,4 +64,7 @@ app.use(errorHandler);
 
 app.listen(port, () => {
   console.log(`Listening on port ${port}.`);
+  console.log(
+    "Routes loaded: GET /, GET /api/health, POST /api/auth/register (debug), /api/auth, etc.",
+  );
 });

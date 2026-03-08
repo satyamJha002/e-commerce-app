@@ -17,7 +17,9 @@ const register = asyncHandler(async (req, res) => {
     throw new Error("Please fill out the required field");
   }
 
-  const authExist = await Auth.findOne({ $or: [{ email: { $eq: email } }, { username: { $eq: username } }] });
+  const authExist = await Auth.findOne({
+    $or: [{ email: { $eq: email } }, { username: { $eq: username } }],
+  });
 
   if (authExist) {
     res.status(400);
@@ -185,7 +187,7 @@ const logout = asyncHandler(async (req, res) => {
   if (refreshToken) {
     await Auth.findOneAndUpdate(
       { refreshToken: refreshToken },
-      { $unset: { refreshToken: 1 } }
+      { $unset: { refreshToken: 1 } },
     );
   }
 
@@ -284,7 +286,9 @@ const getAllUsers = asyncHandler(async (req, res) => {
 // @route   GET /api/auth/users/:id
 // @access  Private/Admin
 const getUserById = asyncHandler(async (req, res) => {
-  const auth = await Auth.findById(req.params.id).select("-password -refreshToken");
+  const auth = await Auth.findById(req.params.id).select(
+    "-password -refreshToken",
+  );
   if (!auth) {
     res.status(404);
     throw new Error("User not found");
@@ -303,4 +307,13 @@ const getUserById = asyncHandler(async (req, res) => {
   });
 });
 
-export { register, login, getMe, logout, refreshToken, googleLogin, getAllUsers, getUserById };
+export {
+  register,
+  login,
+  getMe,
+  logout,
+  refreshToken,
+  googleLogin,
+  getAllUsers,
+  getUserById,
+};
