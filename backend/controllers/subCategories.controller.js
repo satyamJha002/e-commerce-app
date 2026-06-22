@@ -217,8 +217,8 @@ const createSubCategory = asyncHandler(async (req, res) => {
   }
 
   const subCategoryExist = await SubCategory.findOne({
-    name: name.trim(),
-    categoryId,
+    name: { $eq: name.trim() },
+    categoryId: { $eq: categoryId },
   });
 
   if (subCategoryExist) {
@@ -334,8 +334,8 @@ const updateSubCategory = asyncHandler(async (req, res) => {
 
   if (name && name !== subCategory.name) {
     const existingSubCategory = await SubCategory.findOne({
-      name: name.trim(),
-      categoryId: categoryId || subCategory.categoryId,
+      name: { $eq: name.trim() },
+      categoryId: { $eq: categoryId || subCategory.categoryId },
       _id: { $ne: id },
     });
 
@@ -377,7 +377,7 @@ const deleteSubCategory = asyncHandler(async (req, res) => {
     throw new Error("Sub-category is not present");
   }
 
-  await SubCategory.findByIdAndDelete(id);
+  await SubCategory.findByIdAndDelete({ $eq: id });
 
   res.status(200).json({
     success: true,
