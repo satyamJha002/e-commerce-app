@@ -20,6 +20,9 @@ const categoriesSchema = new mongoose.Schema(
   }
 );
 
+categoriesSchema.index({ status: 1 });
+categoriesSchema.index({ categoryName: 1 });
+
 const Categories = mongoose.model("Categories", categoriesSchema);
 
 export default Categories;

@@ -5,6 +5,7 @@ import {
   deleteFromCloudinary,
 } from "../utils/cloudinary.js";
 import mongoose from "mongoose";
+import { invalidateCache } from "../middleware/cache.js";
 
 const creatProducts = asyncHandler(async (req, res) => {
   const user = req.user;
@@ -126,6 +127,7 @@ const creatProducts = asyncHandler(async (req, res) => {
   });
 
   const createdProduct = await product.save();
+  await invalidateCache("product");
 
   return res.status(201).json({
     success: true,
@@ -311,6 +313,7 @@ const deleteProductById = asyncHandler(async (req, res) => {
   }
 
   await Product.findByIdAndDelete({ $eq: req.params.id });
+  await invalidateCache("product");
 
   res.json({ success: true, message: "Product deleted successfully" });
 });
@@ -442,6 +445,7 @@ const updateProductById = asyncHandler(async (req, res) => {
       { $set: updateFields },
       { new: true, runValidators: true },
     );
+    await invalidateCache("product");
 
     res.status(200).json({
       success: true,

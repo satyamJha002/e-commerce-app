@@ -1,8 +1,10 @@
 import express from "express";
 import helmet from "helmet";
+import compression from "compression";
 import dotenv from "dotenv";
 import connectDb from "./config/db.js";
 import { notFound, errorHandler } from "./middleware/errorHandler.js";
+import { apiLimiter } from "./middleware/rateLimiter.js";
 import productRoute from "./routes/product.route.js";
 import categoryRoute from "./routes/categories.route.js";
 import subCategoryRoute from "./routes/subCategory.route.js";
@@ -20,8 +22,14 @@ const port = process.env.PORT || 5000;
 const app = express();
 app.use(helmet());
 
+const allowedOrigins = (
+  process.env.ALLOWED_ORIGINS || "http://localhost:5173,http://localhost:3000"
+)
+  .split(",")
+  .map((origin) => origin.trim());
+
 const corsOptions = {
-  origin: ["http://localhost:5173", "http://localhost:3000"],
+  origin: allowedOrigins,
   credentials: true,
   methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
   allowedHeaders: ["Content-Type", "Authorization"],
@@ -29,6 +37,8 @@ const corsOptions = {
 };
 
 app.use(cors(corsOptions));
+app.use(compression());
+app.use("/api", apiLimiter);
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -38,18 +48,8 @@ app.get("/", (req, res) => {
   res.send("API is running");
 });
 
-// Debug: confirm this server is the one receiving requests (remove after fixing)
 app.get("/api/health", (req, res) => {
-  res.json({
-    ok: true,
-    message: "Backend is this app",
-    authRouteLoaded: !!authRoute,
-  });
-});
-
-// Debug: direct route to see if POST /api/auth/register reaches this app (remove after fixing)
-app.post("/api/auth/register", (req, res) => {
-  res.status(200).json({ debug: true, message: "Request reached index.js" });
+  res.json({ ok: true });
 });
 
 app.use("/api/product", productRoute);
@@ -64,7 +64,4 @@ app.use(errorHandler);
 
 app.listen(port, () => {
   console.log(`Listening on port ${port}.`);
-  console.log(
-    "Routes loaded: GET /, GET /api/health, POST /api/auth/register (debug), /api/auth, etc.",
-  );
 });

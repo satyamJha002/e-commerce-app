@@ -1,6 +1,7 @@
 import asyncHandler from "../middleware/asyncHandler.js";
 import Categories from "../models/categories.model.js";
 import Product from "../models/product.model.js";
+import { invalidateCache } from "../middleware/cache.js";
 import {
   uploadToCloudinary,
   deleteFromCloudinary,
@@ -128,6 +129,7 @@ const createCategory = asyncHandler(async (req, res) => {
   });
 
   const createCategory = await category.save();
+  await invalidateCache("product");
 
   return res.status(201).json({
     success: true,
@@ -250,6 +252,7 @@ const deleteCategory = asyncHandler(async (req, res) => {
   }
 
   await Categories.findByIdAndDelete({ $eq: id });
+  await invalidateCache("product");
 
   res.status(200).json({
     success: true,
@@ -352,6 +355,7 @@ const updateCategory = asyncHandler(async (req, res) => {
     new: true,
     runValidators: true,
   }).populate("user", "name email");
+  await invalidateCache("product");
 
   return res.status(200).json({
     success: true,

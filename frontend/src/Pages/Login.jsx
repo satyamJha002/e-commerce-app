@@ -149,7 +149,7 @@ const Login = () => {
               disabled={isLoading}
               className="w-full bg-indigo-600 text-white rounded-lg py-3 px-4 hover:bg-indigo-700 focus:ring-2 focus:ring-indigo-300 focus:outline-none transition-all duration-200 dark:bg-indigo-600 dark:hover:bg-indigo-700 dark:focus:ring-indigo-800 transform hover:scale-105"
             >
-              {isLoading ? "Sign In..." : "Login"}
+              {isLoading ? "Logging In..." : "Login"}
             </button>
 
             <div className="flex flex-col gap-2 mt-2">

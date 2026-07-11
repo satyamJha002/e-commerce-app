@@ -29,6 +29,8 @@ const subCategoriesSchema = new mongoose.Schema(
   }
 );
 
+subCategoriesSchema.index({ categoryId: 1, status: 1 });
+
 const SubCategory = mongoose.model("SubCategory", subCategoriesSchema);
 
 export default SubCategory;

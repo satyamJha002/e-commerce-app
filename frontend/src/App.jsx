@@ -94,7 +94,7 @@ const App = () => {
         <Route path="/products/smartwatches" element={<SmartWatches />} />
 
         {/* Admin Dashboard */}
-        <Route path="/admin-login" element={<AdminLogin />} />
+        {/* <Route path="/admin-login" element={<AdminLogin />} /> */}
         <Route element={<AdminProtectedRoute />}>
           <Route path="/admin-dashboard" element={<AdminDashboard />} />
           <Route

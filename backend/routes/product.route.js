@@ -11,6 +11,7 @@ import {
 } from "../controllers/product.controller.js";
 import { protectAuthMiddleware, admin } from "../middleware/authMiddleware.js";
 import { uploadMultiple } from "../middleware/uploadMiddleware.js";
+import { cacheMiddleware } from "../middleware/cache.js";
 
 const router = express.Router();
 
@@ -21,8 +22,8 @@ router.post(
   uploadMultiple("images"),
   creatProducts,
 );
-router.get("/allproducts", getProducts);
-router.get("/getproductdetails/:id", getProductById);
+router.get("/allproducts", cacheMiddleware(60), getProducts);
+router.get("/getproductdetails/:id", cacheMiddleware(120), getProductById);
 router.delete(
   "/deleteproduct/:id",
   protectAuthMiddleware,
@@ -36,10 +37,18 @@ router.patch(
   uploadMultiple("images"),
   updateProductById,
 );
-router.get("/products-by-category", getProductsByCategory);
+router.get(
+  "/products-by-category",
+  cacheMiddleware(60),
+  getProductsByCategory,
+);
 
 // Public endpoint - get products by category name
-router.get("/by-category-name/:categoryName", getProductsByCategoryName);
+router.get(
+  "/by-category-name/:categoryName",
+  cacheMiddleware(60),
+  getProductsByCategoryName,
+);
 
 // Public endpoint - search products
 router.get("/search", searchProducts);
