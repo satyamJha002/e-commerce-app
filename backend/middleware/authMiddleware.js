@@ -36,8 +36,8 @@ const protectAuthMiddleware = asyncHandler(async (req, res, next) => {
 
     res.cookie("token", "", {
       httpOnly: true,
-      secure: process.env.NODE_ENV === "development",
-      sameSite: "strict",
+      secure: process.env.NODE_ENV === "production",
+      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
       path: "/",
       expires: new Date(0),
     });

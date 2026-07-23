@@ -49,7 +49,7 @@ const register = asyncHandler(async (req, res) => {
     res.cookie("token", token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production", // Standard practice
-      sameSite: "strict",
+      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
       maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
       path: "/",
     });
@@ -88,7 +88,7 @@ const login = asyncHandler(async (req, res) => {
     res.cookie("token", token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production", // Standard practice
-      sameSite: "strict",
+      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
       maxAge: 15 * 60 * 1000, // 30 days
       path: "/",
     });
@@ -100,7 +100,7 @@ const login = asyncHandler(async (req, res) => {
     res.cookie("refreshToken", refreshToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
-      sameSite: "strict",
+      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
       maxAge: refreshTokenMaxAge,
       path: "/",
     });
@@ -141,8 +141,8 @@ const refreshToken = asyncHandler(async (req, res) => {
 
     res.cookie("token", newToken, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === "development",
-      sameSite: "strict",
+      secure: process.env.NODE_ENV === "production",
+      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
       maxAge: 30 * 24 * 60 * 60 * 1000,
       path: "/",
     });
@@ -154,8 +154,8 @@ const refreshToken = asyncHandler(async (req, res) => {
   } catch (error) {
     res.cookie("token", "", {
       httpOnly: true,
-      secure: process.env.NODE_ENV === "development",
-      sameSite: "strict",
+      secure: process.env.NODE_ENV === "production",
+      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
       path: "/",
       expires: new Date(0),
     });
@@ -194,7 +194,7 @@ const logout = asyncHandler(async (req, res) => {
   res.cookie("token", "", {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
-    sameSite: "strict",
+    sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
     path: "/",
     expires: new Date(0),
   });
@@ -202,7 +202,7 @@ const logout = asyncHandler(async (req, res) => {
   res.cookie("refreshToken", "", {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
-    sameSite: "strict",
+    sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
     path: "/",
     expires: new Date(0),
   });
@@ -249,7 +249,7 @@ const googleLogin = asyncHandler(async (req, res) => {
   res.cookie("token", token, {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
-    sameSite: "strict",
+    sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
     maxAge: 15 * 60 * 1000,
     path: "/",
   });
@@ -257,7 +257,7 @@ const googleLogin = asyncHandler(async (req, res) => {
   res.cookie("refreshToken", refreshToken, {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
-    sameSite: "strict",
+    sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
     maxAge: 30 * 24 * 60 * 60 * 1000,
     path: "/",
   });
