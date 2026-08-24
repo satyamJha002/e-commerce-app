@@ -22,14 +22,25 @@ const port = process.env.PORT || 5000;
 const app = express();
 app.use(helmet());
 
-const allowedOrigins = (
-  process.env.ALLOWED_ORIGINS || "http://localhost:5173,http://localhost:3000"
-)
-  .split(",")
-  .map((origin) => origin.trim());
+const normalizeOrigin = (origin) => origin.trim().replace(/\/$/, "");
+const allowedOrigins = [
+  "http://localhost:5173",
+  "http://localhost:3000",
+  "https://e-commerce-app-taupe-three.vercel.app",
+  ...(process.env.ALLOWED_ORIGINS || "")
+    .split(",")
+    .filter(Boolean)
+    .map(normalizeOrigin),
+].map(normalizeOrigin);
 
 const corsOptions = {
-  origin: allowedOrigins,
+  origin: (origin, callback) => {
+    if (!origin || allowedOrigins.includes(normalizeOrigin(origin))) {
+      return callback(null, true);
+    }
+
+    return callback(new Error("Origin is not allowed by CORS"));
+  },
   credentials: true,
   methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
   allowedHeaders: ["Content-Type", "Authorization"],
