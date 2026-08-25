@@ -1,5 +1,4 @@
-import React from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { useGetProductsByCategoryNameQuery } from "../slices/productApiSlice.js";
 import { useGetSubCategoriesByCategoryNameQuery } from "../slices/subCategoryApiSlice.js";
@@ -18,14 +17,17 @@ import {
 } from "lucide-react";
 
 const CategoryPage = ({
-  categoryName,
-  categoryTitle,
-  categoryDescription,
-  categoryImage,
-  categoryIcon,
+  categoryName: propCategoryName,
+  categoryTitle: propCategoryTitle,
+  categoryDescription: propCategoryDescription,
+  categoryImage: propCategoryImage,
+  categoryIcon: propCategoryIcon,
 }) => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const { categoryName: urlCategoryName } = useParams();
+
+  const categoryName = propCategoryName || urlCategoryName;
 
   // Use the new API that properly fetches products by category ObjectId
   const {
@@ -36,6 +38,11 @@ const CategoryPage = ({
 
   const { data: subCategoriesData, isLoading: isLoadingSubCategories } =
     useGetSubCategoriesByCategoryNameQuery(categoryName);
+
+  const categoryTitle = propCategoryTitle || productsData?.category?.name || categoryName;
+  const categoryDescription = propCategoryDescription || productsData?.category?.description || "";
+  const categoryImage = propCategoryImage || productsData?.category?.image || "/placeholder.svg";
+  const categoryIcon = propCategoryIcon || "📁";
 
   const products = productsData?.products || [];
   const subCategories = subCategoriesData?.data || [];

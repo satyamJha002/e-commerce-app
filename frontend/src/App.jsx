@@ -33,6 +33,7 @@ import Setting from "./Pages/Admin/Setting.jsx";
 import Categories from "./Pages/Admin/MasterData/Catgories/Categories.jsx";
 import SubCategories from "./Pages/Admin/MasterData/SubCategories/SubCategories.jsx";
 import SubCategoryPage from "./component/SubCategoryPage.jsx";
+import CategoryPage from "./component/CategoryPage.jsx";
 
 const App = () => {
   const location = useLocation();
@@ -85,6 +86,12 @@ const App = () => {
         <Route
           path="/category/:categoryName/:subCategoryName"
           element={<SubCategoryPage />}
+        />
+
+        {/* Dynamic Category Route */}
+        <Route
+          path="/products/category/:categoryName"
+          element={<CategoryPage />}
         />
 
         {/* Products */}

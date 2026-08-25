@@ -2,6 +2,7 @@ import SubCategory from "../models/subCategories.model.js";
 import Categories from "../models/categories.model.js";
 import Product from "../models/product.model.js";
 import asyncHandler from "../middleware/asyncHandler.js";
+import mongoose from "mongoose";
 
 // Public endpoint - Get products by category and subcategory name (no auth required)
 const getProductsBySubCategory = asyncHandler(async (req, res) => {
@@ -16,11 +17,22 @@ const getProductsBySubCategory = asyncHandler(async (req, res) => {
   // Format subcategory name from URL format (e.g., "kitchen-appliances" -> "kitchen appliances")
   const formattedSubCategoryName = subCategoryName.replace(/-/g, " ");
 
-  // Find the category by name (case-insensitive, exact match first then partial)
-  let category = await Categories.findOne({
-    categoryName: { $regex: new RegExp(`^${categoryName}$`, "i") },
-    status: "Active",
-  });
+  // Find the category: first by ID if valid ObjectId, then by name
+  let category;
+  if (mongoose.Types.ObjectId.isValid(categoryName)) {
+    category = await Categories.findOne({
+      _id: categoryName,
+      status: "Active",
+    });
+  }
+
+  if (!category) {
+    // Find the category by name (case-insensitive, exact match first then partial)
+    category = await Categories.findOne({
+      categoryName: { $regex: new RegExp(`^${categoryName}$`, "i") },
+      status: "Active",
+    });
+  }
 
   // If exact match fails, try partial match
   if (!category) {
@@ -150,11 +162,22 @@ const getSubCategoriesByCategoryName = asyncHandler(async (req, res) => {
     throw new Error("Category name is required");
   }
 
-  // Find the category by name (case-insensitive exact match first)
-  let category = await Categories.findOne({
-    categoryName: { $regex: new RegExp(`^${categoryName}$`, "i") },
-    status: "Active",
-  });
+  // Find the category: first by ID if valid ObjectId, then by name
+  let category;
+  if (mongoose.Types.ObjectId.isValid(categoryName)) {
+    category = await Categories.findOne({
+      _id: categoryName,
+      status: "Active",
+    });
+  }
+
+  if (!category) {
+    // Find the category by name (case-insensitive exact match first)
+    category = await Categories.findOne({
+      categoryName: { $regex: new RegExp(`^${categoryName}$`, "i") },
+      status: "Active",
+    });
+  }
 
   // If exact match fails, try partial match
   if (!category) {

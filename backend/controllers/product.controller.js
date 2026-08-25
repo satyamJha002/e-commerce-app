@@ -537,11 +537,22 @@ const getProductsByCategoryName = asyncHandler(async (req, res) => {
     // Import Categories model
     const Categories = (await import("../models/categories.model.js")).default;
 
-    // Find the category by name (case-insensitive, also handle partial matches like "home" for "Home & Garden")
-    let category = await Categories.findOne({
-      categoryName: { $regex: new RegExp(`^${categoryName}$`, "i") },
-      status: "Active",
-    });
+    // Find the category: first by ID if valid ObjectId, then by name
+    let category;
+    if (mongoose.Types.ObjectId.isValid(categoryName)) {
+      category = await Categories.findOne({
+        _id: categoryName,
+        status: "Active",
+      });
+    }
+
+    if (!category) {
+      // Find the category by name (case-insensitive, also handle partial matches like "home" for "Home & Garden")
+      category = await Categories.findOne({
+        categoryName: { $regex: new RegExp(`^${categoryName}$`, "i") },
+        status: "Active",
+      });
+    }
 
     // If exact match fails, try partial match (e.g., "sports" matches "Sports & Outdoors")
     if (!category) {
